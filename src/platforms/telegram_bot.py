@@ -40,10 +40,6 @@ class TelegramBot(Bot):
         await self.client.stop()
         await self.client.shutdown()
 
-    async def setup_commands(self, commands: list[Command], prefix: str = '/'):
-        self.commands = commands
-        self.prefix = prefix
-
     def __convert_to_multi_platform_message(self, message: Message):
         return MultiPlatformMessage('telegram', message.id, message.chat_id,
                                     message.text or '')

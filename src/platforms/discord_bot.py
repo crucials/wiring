@@ -46,12 +46,6 @@ class DiscordBot(Bot):
         await self.client.close()
         print('stopping discord bot')
 
-    async def setup_commands(self, commands: list[Command], prefix: str = '/'):
-        self.commands = commands
-        self.commands_prefix = prefix
-
-        await discord.app_commands.tree.CommandTree(self.client).sync()
-
     async def send_message(self, chat_id: int, text: str,
                            reply_message_id: Optional[int] = None):
         channel: Any = await self.client.fetch_channel(chat_id)

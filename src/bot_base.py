@@ -36,9 +36,9 @@ class Bot(ABC):
     async def send_message(self, chat_id, text: str, reply_message_id: Any = None):
         pass
 
-    @abstractmethod
     async def setup_commands(self, commands: list[Command], prefix: str = '/'):
-        pass
+        self.commands_prefix = prefix
+        self.commands = commands
 
     async def __aenter__(self):
         await self.start()
@@ -52,7 +52,8 @@ class Bot(ABC):
 
             matched_commands = [
                 some_command for some_command in self.commands
-                if some_command.name == message_parts[0].removeprefix('/').strip()
+                if some_command.name == message_parts[0]
+                .removeprefix(self.commands_prefix).strip()
             ]
 
             if len(matched_commands) > 0:

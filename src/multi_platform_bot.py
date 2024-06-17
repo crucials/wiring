@@ -44,6 +44,8 @@ class MultiPlatformBot(Bot):
         for bot in self.platform_bots:
             await bot.setup_commands(commands, prefix)
 
+        await super().setup_commands(commands, prefix)
+
     def add_discord_bot(self, token: str):
         self.platform_bots.append(
             DiscordBot(token)
