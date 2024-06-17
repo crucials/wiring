@@ -1,4 +1,5 @@
 from typing import Optional
+
 from bot_base import Bot, Command
 from multi_platform_resources import MultiPlatformValue
 from platforms.discord_bot import DiscordBot
@@ -27,7 +28,8 @@ class MultiPlatformBot(Bot):
                 await bot.event_listening_coroutine
 
     async def send_message(self, chat_id: MultiPlatformValue, text: str,
-                           reply_message_id: MultiPlatformValue = {}):
+                           reply_message_id: MultiPlatformValue = {},
+                           images: Optional[list] = None):
         for bot in self.platform_bots:
             if bot.platform not in chat_id:
                 continue
@@ -38,7 +40,9 @@ class MultiPlatformBot(Bot):
             print(f'sending to {platform_chat_id} on {bot.platform}')
 
             if platform_chat_id is not None:
-                await bot.send_message(platform_chat_id, text, platform_reply_message_id)
+                await bot.send_message(platform_chat_id, text,
+                                       platform_reply_message_id,
+                                       images)
 
     async def setup_commands(self, commands: list[Command], prefix: str = '/'):
         for bot in self.platform_bots:

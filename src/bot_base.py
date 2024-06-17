@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import asyncio
 from dataclasses import dataclass
+from io import BufferedReader
 from typing import Any, Callable, Coroutine, Optional, Awaitable
 
 from multi_platform_resources import MultiPlatformMessage
@@ -33,7 +34,14 @@ class Bot(ABC):
         pass
 
     @abstractmethod
-    async def send_message(self, chat_id, text: str, reply_message_id: Any = None):
+    async def send_message(self, chat_id,
+                           text: str,
+                           reply_message_id: Any = None,
+                           images: Optional[list[BufferedReader]] = None):
+        """
+        :param images: images streams to read and embed as a files.
+        **closes the streams automatically after reading**
+        """
         pass
 
     async def setup_commands(self, commands: list[Command], prefix: str = '/'):

@@ -1,9 +1,11 @@
 import asyncio
+from io import BufferedReader
+from typing import Optional
 
-from telegram.ext import ApplicationBuilder, MessageHandler, CommandHandler
-from telegram import Message, Update, BotCommand
+from telegram.ext import ApplicationBuilder, MessageHandler
+from telegram import InputMediaPhoto, Message, Update
 
-from bot_base import Bot, Command
+from bot_base import Bot
 from multi_platform_resources import MultiPlatformMessage
 
 
@@ -44,6 +46,17 @@ class TelegramBot(Bot):
         return MultiPlatformMessage('telegram', message.id, message.chat_id,
                                     message.text or '')
 
-    async def send_message(self, chat_id, text: str, reply_message_id = None):
+    async def send_message(self, chat_id, text: str,
+                           reply_message_id = None,
+                           images: Optional[list[BufferedReader]] = None):
+        if images is not None:
+            await self.client.bot.send_media_group(
+                chat_id,
+                [InputMediaPhoto(media=image) for image in images],
+                caption=text,
+                reply_to_message_id=reply_message_id
+            )
+            return
+
         await self.client.bot.send_message(chat_id, text,
                                            reply_to_message_id=reply_message_id)

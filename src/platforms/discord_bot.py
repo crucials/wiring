@@ -3,7 +3,7 @@ from typing import Any, Optional
 
 import discord
 
-from bot_base import Bot, Command
+from bot_base import Bot
 from multi_platform_resources import MultiPlatformMessage
 
 
@@ -47,11 +47,14 @@ class DiscordBot(Bot):
         print('stopping discord bot')
 
     async def send_message(self, chat_id: int, text: str,
-                           reply_message_id: Optional[int] = None):
+                           reply_message_id: Optional[int] = None,
+                           images: Optional[list] = None):
         channel: Any = await self.client.fetch_channel(chat_id)
+
+        files = [discord.File(image) for image in images or []]
 
         if reply_message_id is not None:
             message: discord.Message = await channel.fetch_message(reply_message_id)
-            await message.reply(text)
+            await message.reply(text, files=files)
         else:
-            await channel.send(text)
+            await channel.send(text, files=files)
