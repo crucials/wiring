@@ -51,7 +51,7 @@ class TelegramBot(Bot):
                                     message.text or '')
 
     async def send_message(self, chat_id, text: str,
-                           reply_message_id = None,
+                           reply_message_id=None,
                            images: Optional[list[BufferedReader]] = None):
         if images is not None:
             await self.client.bot.send_media_group(

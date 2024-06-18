@@ -38,9 +38,9 @@ class MultiPlatformBot(Bot):
             platform_reply_message_id = reply_message_id.get(bot.platform)
 
             if platform_chat_id is not None:
-                self.logger.info(f'sending message to chat \'{platform_chat_id}\' ' +
-                                 f'on \'{bot.platform}\'')
-                
+                self.logger.info(f'sending message to chat \'{platform_chat_id}\' '
+                                 + f'on \'{bot.platform}\'')
+
                 await bot.send_message(platform_chat_id, text,
                                        platform_reply_message_id,
                                        images)
