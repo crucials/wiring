@@ -7,7 +7,7 @@ from typing import Any, Callable, Coroutine, Optional, Awaitable
 from multi_platform_resources import MultiPlatformMessage
 
 
-CommandHandler = Callable[[MultiPlatformMessage, list[str]], Coroutine]
+CommandHandler = Callable[[Any, MultiPlatformMessage, list[str]], Coroutine]
 
 
 @dataclass
@@ -66,5 +66,5 @@ class Bot(ABC):
 
             if len(matched_commands) > 0:
                 asyncio.create_task(
-                    matched_commands[0].handler(message, message_parts[1:])
+                    matched_commands[0].handler(self, message, message_parts[1:])
                 )
