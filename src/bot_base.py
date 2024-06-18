@@ -12,7 +12,7 @@ CommandHandler = Callable[[Any, MultiPlatformMessage, list[str]], Coroutine]
 
 @dataclass
 class Command:
-    name: str
+    name: list[str] | str
     handler: CommandHandler
 
 
@@ -55,16 +55,29 @@ class Bot(ABC):
         await self.stop()
 
     async def _check_message_for_command(self, message: MultiPlatformMessage):
-        if message.content.startswith(self.commands_prefix):
-            message_parts = message.content.split(' ')
+        def has_command(text: str, command: Command):
+            cleaned_text = text.removeprefix(self.commands_prefix).strip().casefold()
 
-            matched_commands = [
-                some_command for some_command in self.commands
-                if some_command.name == message_parts[0]
-                .removeprefix(self.commands_prefix).strip()
-            ]
+            if isinstance(command.name, list):
+                return len([name for name in command.name
+                            if cleaned_text == name.casefold()]) > 0
+            else:
+                return command.name.casefold() == cleaned_text
 
-            if len(matched_commands) > 0:
-                asyncio.create_task(
-                    matched_commands[0].handler(self, message, message_parts[1:])
-                )
+        if not message.content.startswith(self.commands_prefix):
+            return
+        
+        message_parts = message.content.split(' ')
+
+        if len(message_parts) == 0:
+            return
+
+        matched_commands = [
+            some_command for some_command in self.commands
+            if has_command(message_parts[0], some_command)
+        ]
+
+        if len(matched_commands) > 0:
+            asyncio.create_task(
+                matched_commands[0].handler(self, message, message_parts[1:])
+            )
