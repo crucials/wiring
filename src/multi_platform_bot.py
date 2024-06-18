@@ -1,17 +1,20 @@
+import logging
 from typing import Optional
 
 from bot_base import Bot, Command
 from logging_options import DEFAULT_LOGGING_OPTIONS
 from multi_platform_resources import MultiPlatformValue
-from platforms.discord_bot import DiscordBot
-from platforms.telegram_bot import TelegramBot
 
 
 class MultiPlatformBot(Bot):
-    def __init__(self):
+    def __init__(self, logging_options=DEFAULT_LOGGING_OPTIONS):
         self.platform_bots: list[Bot] = []
 
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging_options['level'])
+
     async def start(self):
+        self.logger.info('started')
         for bot in self.platform_bots:
             await bot.start()
 
@@ -34,9 +37,10 @@ class MultiPlatformBot(Bot):
             platform_chat_id = chat_id.get(bot.platform)
             platform_reply_message_id = reply_message_id.get(bot.platform)
 
-            print(f'sending to {platform_chat_id} on {bot.platform}')
-
             if platform_chat_id is not None:
+                self.logger.info(f'sending message to chat \'{platform_chat_id}\' ' +
+                                 f'on \'{bot.platform}\'')
+                
                 await bot.send_message(platform_chat_id, text,
                                        platform_reply_message_id,
                                        images)

@@ -28,7 +28,6 @@ class TelegramBot(Bot):
             self.client.bot._LOGGER.setLevel(logging_options['level'])
 
     async def start(self):
-        print('starting telegram bot')
         await self.client.initialize()
 
         if self.client.updater is None:

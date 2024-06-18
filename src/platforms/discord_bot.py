@@ -45,11 +45,9 @@ class DiscordBot(Bot):
     async def start(self):
         await self.client.login(self._token)
         self.event_listening_coroutine = asyncio.create_task(self.client.connect())
-        print('started discord bot with token ' + self._token)
 
     async def stop(self):
         await self.client.close()
-        print('stopping discord bot')
 
     async def send_message(self, chat_id: int, text: str,
                            reply_message_id: Optional[int] = None,
