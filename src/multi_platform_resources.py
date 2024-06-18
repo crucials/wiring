@@ -8,9 +8,12 @@ Platform = Literal['discord', 'telegram']
 MultiPlatformValue = dict[Platform, Any]
 
 
+MultiPlatformId = str | int
+
+
 @dataclass
 class MultiPlatformMessage():
     platform: Platform
-    id: Any
-    chat_id: Any
+    id: MultiPlatformId
+    chat_id: MultiPlatformId
     content: str
