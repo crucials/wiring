@@ -1,17 +1,14 @@
 from typing import Optional
 
 from bot_base import Bot, Command
+from logging_options import DEFAULT_LOGGING_OPTIONS
 from multi_platform_resources import MultiPlatformValue
 from platforms.discord_bot import DiscordBot
 from platforms.telegram_bot import TelegramBot
 
 
 class MultiPlatformBot(Bot):
-    def __init__(self,
-                 commands_prefix: str = '/',
-                 commands: list[Command] = []):
-        self.commands_prefix = commands_prefix
-        self.commands = commands
+    def __init__(self):
         self.platform_bots: list[Bot] = []
 
     async def start(self):
@@ -49,13 +46,3 @@ class MultiPlatformBot(Bot):
             await bot.setup_commands(commands, prefix)
 
         await super().setup_commands(commands, prefix)
-
-    def add_discord_bot(self, token: str):
-        self.platform_bots.append(
-            DiscordBot(token)
-        )
-
-    def add_telegram_bot(self, token: str):
-        self.platform_bots.append(
-            TelegramBot(token)
-        )

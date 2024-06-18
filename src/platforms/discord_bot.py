@@ -4,6 +4,7 @@ from typing import Any, Optional
 import discord
 
 from bot_base import Bot
+from logging_options import DEFAULT_LOGGING_OPTIONS
 from multi_platform_resources import MultiPlatformMessage
 
 
@@ -26,7 +27,7 @@ class CustomClient(discord.Client):
 
 
 class DiscordBot(Bot):
-    def __init__(self, token: str):
+    def __init__(self, token: str, logging_options=DEFAULT_LOGGING_OPTIONS):
         super().__init__('discord')
 
         intents = discord.Intents.default()
@@ -36,6 +37,10 @@ class DiscordBot(Bot):
             'message': self._check_message_for_command
         })
         self._token = token
+
+        discord.utils.setup_logging(handler=logging_options['handler']
+                                    or discord.utils.MISSING,
+                                    level=logging_options['level'])
 
     async def start(self):
         await self.client.login(self._token)

@@ -6,11 +6,12 @@ from telegram.ext import ApplicationBuilder, MessageHandler
 from telegram import InputMediaPhoto, Message, Update
 
 from bot_base import Bot
+from logging_options import DEFAULT_LOGGING_OPTIONS
 from multi_platform_resources import MultiPlatformMessage
 
 
 class TelegramBot(Bot):
-    def __init__(self, token: str):
+    def __init__(self, token: str, logging_options=DEFAULT_LOGGING_OPTIONS):
         super().__init__('telegram')
         self.client = ApplicationBuilder().token(token).build()
 
@@ -21,6 +22,10 @@ class TelegramBot(Bot):
                 )
 
         self.client.add_handler(MessageHandler(filters=None, callback=handle_message))
+
+        if logging_options['handler']:
+            self.client.bot._LOGGER.addHandler(logging_options['handler'])
+            self.client.bot._LOGGER.setLevel(logging_options['level'])
 
     async def start(self):
         print('starting telegram bot')
