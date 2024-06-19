@@ -37,7 +37,7 @@ class Bot(ABC):
     async def send_message(self, chat_id,
                            text: str,
                            reply_message_id: Any = None,
-                           images: Optional[list[BufferedReader]] = None):
+                           files: Optional[list[BufferedReader]] = None):
         """
         :param images: images streams to read and embed as a files.
         **closes the streams automatically after reading**

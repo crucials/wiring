@@ -51,10 +51,10 @@ class DiscordBot(Bot):
 
     async def send_message(self, chat_id: int, text: str,
                            reply_message_id: Optional[int] = None,
-                           images: Optional[list] = None):
+                           files: Optional[list] = None):
         channel: Any = await self.client.fetch_channel(chat_id)
 
-        files = [discord.File(image) for image in images or []]
+        files = [discord.File(file) for file in files or []]
 
         if reply_message_id is not None:
             message: discord.Message = await channel.fetch_message(reply_message_id)

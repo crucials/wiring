@@ -3,7 +3,7 @@ from io import BufferedReader
 from typing import Optional
 
 from telegram.ext import ApplicationBuilder, MessageHandler
-from telegram import InputMediaPhoto, Message, Update
+from telegram import InputFile, InputMediaAudio, InputMediaDocument, InputMediaPhoto, InputMediaVideo, Message, Update
 
 from bot_base import Bot
 from logging_options import DEFAULT_LOGGING_OPTIONS
@@ -52,11 +52,11 @@ class TelegramBot(Bot):
 
     async def send_message(self, chat_id, text: str,
                            reply_message_id=None,
-                           images: Optional[list[BufferedReader]] = None):
-        if images is not None:
+                           files: Optional[list[BufferedReader]] = None):
+        if files is not None:
             await self.client.bot.send_media_group(
                 chat_id,
-                [InputMediaPhoto(media=image) for image in images],
+                [self.__convert_stream_to_telegram_media(file) for file in files],
                 caption=text,
                 reply_to_message_id=reply_message_id
             )
@@ -64,3 +64,16 @@ class TelegramBot(Bot):
 
         await self.client.bot.send_message(chat_id, text,
                                            reply_to_message_id=reply_message_id)
+        
+    def __convert_stream_to_telegram_media(self, stream: BufferedReader):
+            file = InputFile(stream)
+            mimetype = file.mimetype
+            
+            if mimetype.startswith('video'):
+                return InputMediaVideo(media=file.input_file_content)
+            elif mimetype.startswith('image'):
+                return InputMediaPhoto(media=file.input_file_content)
+            elif mimetype.startswith('audio'):
+                return InputMediaAudio(media=file.input_file_content)
+            else:
+                return InputMediaDocument(media=file.input_file_content)
