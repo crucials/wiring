@@ -2,18 +2,25 @@ from abc import ABC, abstractmethod
 import asyncio
 from dataclasses import dataclass
 from io import BufferedReader
-from typing import Any, Callable, Coroutine, Optional, Awaitable
+from typing import Any, Callable, Coroutine, Literal, Optional, Awaitable
 
 from multi_platform_resources import MultiPlatformMessage
 
 
 CommandHandler = Callable[[Any, MultiPlatformMessage, list[str]], Coroutine]
 
+Event = Literal['message']
 
 @dataclass
 class Command:
     name: list[str] | str
     handler: CommandHandler
+
+
+@dataclass
+class EventHandler:
+    event: Event
+    do_on_event: Callable[[Any, Any], Coroutine]
 
 
 class Bot(ABC):
@@ -24,6 +31,8 @@ class Bot(ABC):
         self.commands = []
 
         self.event_listening_coroutine: Optional[Awaitable] = None
+
+        self._event_handlers: list[EventHandler] = []
 
     @abstractmethod
     async def start(self):
@@ -48,13 +57,21 @@ class Bot(ABC):
         self.commands_prefix = prefix
         self.commands = commands
 
+    def add_event_handler(self, handler: EventHandler):
+        self._event_handlers.append(handler)
+
     async def __aenter__(self):
         await self.start()
 
     async def __aexit__(self, *args):
         await self.stop()
 
-    async def _check_message_for_command(self, message: MultiPlatformMessage):
+    def _run_event_handlers(self, event: Event, event_data=None):
+        [asyncio.create_task(handler.do_on_event(self, event_data))
+         for handler in self._event_handlers
+         if handler.event == event]
+
+    def _check_message_for_command(self, message: MultiPlatformMessage):
         def has_command(text: str, command: Command):
             cleaned_text = text.removeprefix(self.commands_prefix).strip().casefold()
 

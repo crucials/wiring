@@ -14,18 +14,23 @@ class TelegramBot(Bot):
     def __init__(self, token: str, logging_options=DEFAULT_LOGGING_OPTIONS):
         super().__init__('telegram')
         self.client = ApplicationBuilder().token(token).build()
-
-        async def handle_message(update: Update, context):
-            if update.message:
-                await self._check_message_for_command(
-                    self.__convert_to_multi_platform_message(update.message)
-                )
-
-        self.client.add_handler(MessageHandler(filters=None, callback=handle_message))
+        
+        self.__setup_event_handlers()
 
         if logging_options['handler']:
             self.client.bot._LOGGER.addHandler(logging_options['handler'])
             self.client.bot._LOGGER.setLevel(logging_options['level'])
+
+    def __setup_event_handlers(self):
+        async def handle_message(update: Update, context):
+            if update.message:
+                message = self.__convert_to_multi_platform_message(update.message)
+
+                self._run_event_handlers('message', message)
+                
+                self._check_message_for_command(message)
+
+        self.client.add_handler(MessageHandler(filters=None, callback=handle_message))
 
     async def start(self):
         await self.client.initialize()

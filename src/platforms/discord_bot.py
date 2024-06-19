@@ -1,5 +1,5 @@
 import asyncio
-from typing import Any, Optional
+from typing import Any, Callable, Optional
 
 import discord
 
@@ -11,14 +11,23 @@ from multi_platform_resources import MultiPlatformMessage
 class CustomClient(discord.Client):
     def __init__(self,
                  intents: discord.Intents,
-                 event_handlers: dict):
+                 event_handlers: dict[str, Callable]):
         super().__init__(intents=intents)
         self._event_handlers = event_handlers
 
     async def on_message(self, message: discord.Message):
         do_on_message = self._event_handlers.get('message')
+        do_on_all_events = self._event_handlers.get('all')
+
+        print(do_on_all_events)
+
+        if do_on_all_events is not None:
+            do_on_all_events(
+                'message', self.convert_to_multi_platform_message(message)
+            )
+
         if do_on_message is not None:
-            await do_on_message(self.convert_to_multi_platform_message(message))
+            do_on_message(self.convert_to_multi_platform_message(message))
 
     def convert_to_multi_platform_message(self, discord_message: discord.Message):
         return MultiPlatformMessage('discord', discord_message.id,
@@ -34,7 +43,8 @@ class DiscordBot(Bot):
         intents.message_content = True
 
         self.client = CustomClient(intents, {
-            'message': self._check_message_for_command
+            'all': lambda event, data: self._run_event_handlers(event, data),
+            'message': self._check_message_for_command,
         })
         self._token = token
 
