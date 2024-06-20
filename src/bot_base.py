@@ -47,9 +47,11 @@ class Bot(ABC):
                            text: str,
                            reply_message_id: Any = None,
                            files: Optional[list[BufferedReader]] = None):
-        """
-        :param images: images streams to read and embed as a files.
-        **closes the streams automatically after reading**
+        """sends message in the chat
+
+        Args:
+            files (list): (optional) images streams to read and embed as a files.
+                **closes the streams automatically after reading**
         """
         pass
 
@@ -59,7 +61,13 @@ class Bot(ABC):
 
     def add_event_handler(self, event: Event, handler: Callable[[Any, Any], Coroutine]):
         """
-        ...
+        adds a handler function that will be called when specified event occurs
+            with `Bot` object and event data as arguments
+        
+        supported events:
+            - `message` - when a message sent in any chat bot are member of.
+                ignores current bot's messages to prevent recursion
+            - `join` - when someone joins in chat bot are member of
         """
         self._event_handlers.append(EventHandler(event, handler))
 
