@@ -1,13 +1,15 @@
 import asyncio
 from io import BufferedReader
+import logging
 from typing import Optional
 
-from telegram.ext import ApplicationBuilder, MessageHandler
-from telegram import InputFile, InputMediaAudio, InputMediaDocument, InputMediaPhoto, InputMediaVideo, Message, Update
+from telegram.ext import ApplicationBuilder, MessageHandler, ChatMemberHandler
+from telegram import (InputFile, InputMediaAudio, InputMediaDocument,
+                      InputMediaPhoto, InputMediaVideo, Update)
 
-from bot_base import Bot
+from bot_base import Bot, Event
 from logging_options import DEFAULT_LOGGING_OPTIONS
-from multi_platform_resources import MultiPlatformMessage
+from platforms.telegram.entities_converter import telegram_entities_converter
 
 
 class TelegramBot(Bot):
@@ -18,19 +20,40 @@ class TelegramBot(Bot):
         self.__setup_event_handlers()
 
         if logging_options['handler']:
-            self.client.bot._LOGGER.addHandler(logging_options['handler'])
-            self.client.bot._LOGGER.setLevel(logging_options['level'])
+            telegram_logger = logging.getLogger('telegram')
+            telegram_logger.addHandler(logging_options['handler'])
+            telegram_logger.setLevel(logging_options['level'])
 
     def __setup_event_handlers(self):
-        async def handle_message(update: Update, context):
-            if update.message:
-                message = self.__convert_to_multi_platform_message(update.message)
+        async def handle_update(update: Update, context):
+            if update.message is not None:
+                message = telegram_entities_converter.convert_to_multi_platform_message(
+                    update.message
+                )
 
                 self._run_event_handlers('message', message)
                 
                 self._check_message_for_command(message)
 
-        self.client.add_handler(MessageHandler(filters=None, callback=handle_message))
+            if (update.my_chat_member is not None
+                and update.my_chat_member.new_chat_member is not None):
+                multi_platform_chat = telegram_entities_converter.convert_to_multi_platform_chat(
+                    update.my_chat_member.chat
+                )
+                self._run_event_handlers(
+                    'join',
+                    telegram_entities_converter.convert_to_multi_platform_user(
+                        update.my_chat_member.new_chat_member.user,
+                        multi_platform_chat
+                    )
+                )
+
+            # print(update.__str__() + '\n\n')
+
+        # registering the same handler for each needed update
+        # because i cant find global update handler solution
+        self.client.add_handler(ChatMemberHandler(callback=handle_update))
+        self.client.add_handler(MessageHandler(filters=None, callback=handle_update))
 
     async def start(self):
         await self.client.initialize()
@@ -50,10 +73,6 @@ class TelegramBot(Bot):
     async def stop(self):
         await self.client.stop()
         await self.client.shutdown()
-
-    def __convert_to_multi_platform_message(self, message: Message):
-        return MultiPlatformMessage('telegram', message.id, message.chat_id,
-                                    message.text or '')
 
     async def send_message(self, chat_id, text: str,
                            reply_message_id=None,

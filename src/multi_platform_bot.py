@@ -1,7 +1,7 @@
 import logging
 from typing import Optional
 
-from bot_base import Bot, Command, EventHandler
+from bot_base import Bot, Command, Event
 from logging_options import DEFAULT_LOGGING_OPTIONS
 from multi_platform_resources import MultiPlatformValue
 
@@ -46,10 +46,10 @@ class MultiPlatformBot(Bot):
                                        platform_reply_message_id,
                                        files)
                 
-    def add_event_handler(self, handler: EventHandler):
-        super().add_event_handler(handler)
+    def add_event_handler(self, event: Event, handler):
+        super().add_event_handler(event, handler)
         for bot in self.platform_bots:
-            bot.add_event_handler(handler)
+            bot.add_event_handler(event, handler)
 
     async def setup_commands(self, commands: list[Command], prefix: str = '/'):
         for bot in self.platform_bots:

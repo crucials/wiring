@@ -5,7 +5,7 @@ import discord
 
 from bot_base import Bot
 from logging_options import DEFAULT_LOGGING_OPTIONS
-from multi_platform_resources import MultiPlatformMessage
+from platforms.discord.entities_converter import discord_entities_converter
 
 
 class CustomClient(discord.Client):
@@ -16,24 +16,31 @@ class CustomClient(discord.Client):
         self._event_handlers = event_handlers
 
     async def on_message(self, message: discord.Message):
-        do_on_message = self._event_handlers.get('message')
-        do_on_all_events = self._event_handlers.get('all')
+        if not self.user or message.author.id == self.user.id:
+            return
+        
+        self.__run_event_handler_if_exists(
+            'all', 'message', discord_entities_converter.convert_to_multi_platform_message(message)
+        )
 
-        print(do_on_all_events)
+        self.__run_event_handler_if_exists(
+            'message', discord_entities_converter.convert_to_multi_platform_message(message)
+        )
 
-        if do_on_all_events is not None:
-            do_on_all_events(
-                'message', self.convert_to_multi_platform_message(message)
-            )
+    async def on_member_join(self, member: discord.Member):
+        self.__run_event_handler_if_exists(
+            'all', 'join', discord_entities_converter.convert_to_multi_platform_user(member)
+        )
 
-        if do_on_message is not None:
-            do_on_message(self.convert_to_multi_platform_message(message))
+        self.__run_event_handler_if_exists(
+            'join', discord_entities_converter.convert_to_multi_platform_user(member)
+        )
 
-    def convert_to_multi_platform_message(self, discord_message: discord.Message):
-        return MultiPlatformMessage('discord', discord_message.id,
-                                    discord_message.channel.id,
-                                    discord_message.content)
+    def __run_event_handler_if_exists(self, event: str, *args):
+        do_on_event = self._event_handlers.get(event)
 
+        if do_on_event is not None:
+            do_on_event(*args)
 
 class DiscordBot(Bot):
     def __init__(self, token: str, logging_options=DEFAULT_LOGGING_OPTIONS):
@@ -41,6 +48,7 @@ class DiscordBot(Bot):
 
         intents = discord.Intents.default()
         intents.message_content = True
+        intents.members = True
 
         self.client = CustomClient(intents, {
             'all': lambda event, data: self._run_event_handlers(event, data),

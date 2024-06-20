@@ -9,7 +9,7 @@ from multi_platform_resources import MultiPlatformMessage
 
 CommandHandler = Callable[[Any, MultiPlatformMessage, list[str]], Coroutine]
 
-Event = Literal['message']
+Event = Literal['message', 'join']
 
 @dataclass
 class Command:
@@ -57,8 +57,11 @@ class Bot(ABC):
         self.commands_prefix = prefix
         self.commands = commands
 
-    def add_event_handler(self, handler: EventHandler):
-        self._event_handlers.append(handler)
+    def add_event_handler(self, event: Event, handler: Callable[[Any, Any], Coroutine]):
+        """
+        ...
+        """
+        self._event_handlers.append(EventHandler(event, handler))
 
     async def __aenter__(self):
         await self.start()
@@ -81,10 +84,10 @@ class Bot(ABC):
             else:
                 return command.name.casefold() == cleaned_text
 
-        if not message.content.startswith(self.commands_prefix):
+        if not message.text or not message.text.startswith(self.commands_prefix):
             return
         
-        message_parts = message.content.split(' ')
+        message_parts = message.text.split(' ')
 
         if len(message_parts) == 0:
             return
