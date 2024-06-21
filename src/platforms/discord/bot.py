@@ -79,3 +79,8 @@ class DiscordBot(Bot):
             await message.reply(text, files=files)
         else:
             await channel.send(text, files=files)
+
+    async def get_sub_chats(self, chat_id: int):
+        channels = await (await self.client.fetch_guild(chat_id)).fetch_channels()
+        return [discord_entities_converter.convert_to_multi_platform_sub_chat(channel)
+                for channel in channels]

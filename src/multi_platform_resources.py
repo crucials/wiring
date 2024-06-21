@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Literal, Optional
+from typing import Any, Literal, Optional, TypedDict
 
 
 Platform = Literal['discord', 'telegram']
@@ -9,6 +9,11 @@ MultiPlatformValue = dict[Platform, Any]
 
 
 MultiPlatformId = str | int
+
+
+class PlatformSpecificValue(TypedDict):
+    platform: Platform
+    value: Any
 
 
 @dataclass

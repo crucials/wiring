@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from io import BufferedReader
 from typing import Any, Callable, Coroutine, Literal, Optional, Awaitable
 
-from multi_platform_resources import MultiPlatformMessage
+from multi_platform_resources import MultiPlatformMessage, MultiPlatformSubChat
 
 
 CommandHandler = Callable[[Any, MultiPlatformMessage, list[str]], Coroutine]
@@ -53,6 +53,10 @@ class Bot(ABC):
             files (list): (optional) images streams to read and embed as a files.
                 **closes the streams automatically after reading**
         """
+        pass
+
+    @abstractmethod
+    async def get_sub_chats(self, chat_id) -> list[MultiPlatformSubChat]:
         pass
 
     async def setup_commands(self, commands: list[Command], prefix: str = '/'):

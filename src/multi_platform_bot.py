@@ -3,7 +3,12 @@ from typing import Optional
 
 from bot_base import Bot, Command, Event
 from logging_options import DEFAULT_LOGGING_OPTIONS
-from multi_platform_resources import MultiPlatformValue
+from multi_platform_resources import MultiPlatformValue, PlatformSpecificValue
+
+
+class PlatformBotNotFoundError(Exception):
+    def __init__(self, requested_platform: str):
+        super().__init__(f'bot with platform \'{requested_platform}\' was not added')
 
 
 class MultiPlatformBot(Bot):
@@ -45,7 +50,21 @@ class MultiPlatformBot(Bot):
                 await bot.send_message(platform_chat_id, text,
                                        platform_reply_message_id,
                                        files)
-                
+
+    async def get_sub_chats(self, chat_id: PlatformSpecificValue):
+        """fetches chats grouped in some entity like discord server
+
+        Raises:
+            PlatformBotNotFoundError: if bot for specified platform was not added
+        """
+        needed_bots = [bot for bot in self.platform_bots
+                       if bot.platform == chat_id['platform']]
+
+        if len(needed_bots) == 0:
+            raise PlatformBotNotFoundError(chat_id['platform'])
+        
+        return await needed_bots[0].get_sub_chats(chat_id['value'])
+
     def add_event_handler(self, event: Event, handler):
         super().add_event_handler(event, handler)
         for bot in self.platform_bots:
