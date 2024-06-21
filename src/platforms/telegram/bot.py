@@ -19,12 +19,14 @@ class TelegramBot(Bot):
         
         self.__setup_event_handlers()
 
+        self.logger = logging.getLogger('telegram')
+
         if logging_options['handler']:
-            telegram_logger = logging.getLogger('telegram')
-            telegram_logger.addHandler(logging_options['handler'])
-            telegram_logger.setLevel(logging_options['level'])
+            self.logger.addHandler(logging_options['handler'])
+            self.logger.setLevel(logging_options['level'])
 
     def __setup_event_handlers(self):
+        # mess, need to move it to a different module/class
         async def handle_update(update: Update, context):
             if update.message is not None:
                 message = telegram_entities_converter.convert_to_multi_platform_message(
@@ -35,20 +37,16 @@ class TelegramBot(Bot):
                 
                 self._check_message_for_command(message)
 
-            if (update.my_chat_member is not None
-                and update.my_chat_member.new_chat_member is not None):
-                multi_platform_chat = telegram_entities_converter.convert_to_multi_platform_chat(
-                    update.my_chat_member.chat
-                )
-                self._run_event_handlers(
-                    'join',
-                    telegram_entities_converter.convert_to_multi_platform_user(
-                        update.my_chat_member.new_chat_member.user,
-                        multi_platform_chat
+                for new_member in update.message.new_chat_members or []:
+                    self._run_event_handlers(
+                        'join',
+                        telegram_entities_converter.convert_to_multi_platform_user(
+                            new_member,
+                            telegram_entities_converter.convert_to_multi_platform_chat(
+                                update.message.chat
+                            )
+                        )
                     )
-                )
-
-            # print(update.__str__() + '\n\n')
 
         # registering the same handler for each needed update
         # because i cant find global update handler solution
@@ -88,6 +86,11 @@ class TelegramBot(Bot):
 
         await self.client.bot.send_message(chat_id, text,
                                            reply_to_message_id=reply_message_id)
+        
+    async def get_sub_chats(self, chat_id: int):
+        return [telegram_entities_converter.convert_to_multi_platform_sub_chat(
+            await self.client.bot.get_chat(chat_id)
+        )]
         
     def __convert_stream_to_telegram_media(self, stream: BufferedReader):
             file = InputFile(stream)
