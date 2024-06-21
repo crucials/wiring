@@ -22,7 +22,7 @@ class TelegramEntitiesConverter(ToMultiPlatformConverter):
     
     def convert_to_multi_platform_user(self, user: User,
                                        from_chat: Optional[MultiPlatformChat] = None):
-        return MultiPlatformUser('telegram', user.name, from_chat)
+        return MultiPlatformUser('telegram', user.username or user.full_name, from_chat)
     
     def convert_to_multi_platform_message(
         self, message: Message
