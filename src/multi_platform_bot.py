@@ -51,19 +51,19 @@ class MultiPlatformBot(Bot):
                                        platform_reply_message_id,
                                        files)
 
-    async def get_sub_chats(self, chat_id: PlatformSpecificValue):
+    async def get_chats_from_group(self, chat_group_id: PlatformSpecificValue):
         """fetches chats grouped in some entity like discord server
 
         Raises:
             PlatformBotNotFoundError: if bot for specified platform was not added
         """
         needed_bots = [bot for bot in self.platform_bots
-                       if bot.platform == chat_id['platform']]
+                       if bot.platform == chat_group_id['platform']]
 
         if len(needed_bots) == 0:
-            raise PlatformBotNotFoundError(chat_id['platform'])
-        
-        return await needed_bots[0].get_sub_chats(chat_id['value'])
+            raise PlatformBotNotFoundError(chat_group_id['platform'])
+
+        return await needed_bots[0].get_chats_from_group(chat_group_id['value'])
 
     def add_event_handler(self, event: Event, handler):
         super().add_event_handler(event, handler)

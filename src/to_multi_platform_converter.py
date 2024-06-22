@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from multi_platform_resources import (MultiPlatformChat, MultiPlatformMessage,
-                                      MultiPlatformSubChat, MultiPlatformUser)
+from multi_platform_resources import (MultiPlatformChatGroup, MultiPlatformMessage,
+                                      MultiPlatformChat, MultiPlatformUser)
 
 
 class ToMultiPlatformConverter(ABC):
@@ -14,10 +14,9 @@ class ToMultiPlatformConverter(ABC):
         pass
 
     @abstractmethod
-    def convert_to_multi_platform_chat(self, chat) -> MultiPlatformChat:
+    def convert_to_multi_platform_chat_group(self, chat_group) -> MultiPlatformChatGroup:
         pass
 
     @abstractmethod
-    def convert_to_multi_platform_sub_chat(self,
-                                           sub_chat) -> MultiPlatformSubChat:
+    def convert_to_multi_platform_chat(self, chat) -> MultiPlatformChat:
         pass

@@ -4,8 +4,9 @@ from typing import Any, Callable, Optional
 import discord
 
 from bot_base import Bot
-from logging_options import DEFAULT_LOGGING_OPTIONS
 from platforms.discord.entities_converter import discord_entities_converter
+from logging_options import DEFAULT_LOGGING_OPTIONS
+from errors.not_messageable import NotMessageableChatError
 
 
 class CustomClient(discord.Client):
@@ -18,7 +19,7 @@ class CustomClient(discord.Client):
     async def on_message(self, message: discord.Message):
         if not self.user or message.author.id == self.user.id:
             return
-        
+
         self.__run_event_handler_if_exists(
             'all', 'message', discord_entities_converter.convert_to_multi_platform_message(message)
         )
@@ -41,6 +42,7 @@ class CustomClient(discord.Client):
 
         if do_on_event is not None:
             do_on_event(*args)
+
 
 class DiscordBot(Bot):
     def __init__(self, token: str, logging_options=DEFAULT_LOGGING_OPTIONS):
@@ -72,6 +74,9 @@ class DiscordBot(Bot):
                            files: Optional[list] = None):
         channel: Any = await self.client.fetch_channel(chat_id)
 
+        if not hasattr(channel, 'send'):
+            raise NotMessageableChatError('discord', channel.id)
+
         files = [discord.File(file) for file in files or []]
 
         if reply_message_id is not None:
@@ -80,7 +85,7 @@ class DiscordBot(Bot):
         else:
             await channel.send(text, files=files)
 
-    async def get_sub_chats(self, chat_id: int):
-        channels = await (await self.client.fetch_guild(chat_id)).fetch_channels()
-        return [discord_entities_converter.convert_to_multi_platform_sub_chat(channel)
+    async def get_chats_from_group(self, chat_group_id: int):
+        channels = await (await self.client.fetch_guild(chat_group_id)).fetch_channels()
+        return [discord_entities_converter.convert_to_multi_platform_chat(channel)
                 for channel in channels]

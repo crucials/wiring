@@ -17,9 +17,9 @@ class PlatformSpecificValue(TypedDict):
 
 
 @dataclass
-class MultiPlatformChat:
+class MultiPlatformChatGroup:
     """
-    telegram chat, discord server or other platform chat where message was sent
+    represents a group of chats like discord server or discord private messages
     """
     platform: Platform
     id: MultiPlatformId
@@ -27,11 +27,9 @@ class MultiPlatformChat:
 
 
 @dataclass
-class MultiPlatformSubChat:
+class MultiPlatformChat:
     """
-    represents a chat on platforms where there
-    can be multiple chats that are grouped in some entity like discord server
-    or discord private messages
+    telegram chat, discord channel or other platform chat where message was sent
     """
     platform: Platform
     id: MultiPlatformId
@@ -42,14 +40,14 @@ class MultiPlatformSubChat:
 class MultiPlatformUser:
     platform: Platform
     username: str
-    from_chat: Optional[MultiPlatformChat]
+    from_chat_group: Optional[MultiPlatformChatGroup]
 
 
 @dataclass
 class MultiPlatformMessage():
     platform: Platform
     id: MultiPlatformId
+    chat_group: Optional[MultiPlatformChatGroup]
     chat: Optional[MultiPlatformChat]
-    sub_chat: Optional[MultiPlatformSubChat]
     text: Optional[str]
     author_user: Optional[MultiPlatformUser]

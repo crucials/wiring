@@ -4,12 +4,13 @@ from dataclasses import dataclass
 from io import BufferedReader
 from typing import Any, Callable, Coroutine, Literal, Optional, Awaitable
 
-from multi_platform_resources import MultiPlatformMessage, MultiPlatformSubChat
+from multi_platform_resources import MultiPlatformMessage, MultiPlatformChat
 
 
 CommandHandler = Callable[[Any, MultiPlatformMessage, list[str]], Coroutine]
 
 Event = Literal['message', 'join']
+
 
 @dataclass
 class Command:
@@ -52,11 +53,14 @@ class Bot(ABC):
         Args:
             files (list): (optional) images streams to read and embed as a files.
                 **closes the streams automatically after reading**
+
+        Raises:
+            NotMessageableChatError: if message cant be sent in target chat
         """
         pass
 
     @abstractmethod
-    async def get_sub_chats(self, chat_id) -> list[MultiPlatformSubChat]:
+    async def get_chats_from_group(self, chat_group_id) -> list[MultiPlatformChat]:
         pass
 
     async def setup_commands(self, commands: list[Command], prefix: str = '/'):
@@ -67,7 +71,7 @@ class Bot(ABC):
         """
         adds a handler function that will be called when specified event occurs
             with `Bot` object and event data as arguments
-        
+
         supported events:
             - `message` - when a message sent in any chat bot are member of.
                 ignores current bot's messages to prevent recursion
@@ -98,7 +102,7 @@ class Bot(ABC):
 
         if not message.text or not message.text.startswith(self.commands_prefix):
             return
-        
+
         message_parts = message.text.split(' ')
 
         if len(message_parts) == 0:
