@@ -4,9 +4,10 @@ from typing import Any, Callable, Optional
 import discord
 
 from bot_base import Bot
+from errors.bot_api_error import BotApiError
 from platforms.discord.entities_converter import discord_entities_converter
 from logging_options import DEFAULT_LOGGING_OPTIONS
-from errors.not_messageable import NotMessageableChatError
+from errors.not_messageable_chat import NotMessageableChatError
 
 
 class CustomClient(discord.Client):
@@ -79,11 +80,14 @@ class DiscordBot(Bot):
 
         files = [discord.File(file) for file in files or []]
 
-        if reply_message_id is not None:
-            message: discord.Message = await channel.fetch_message(reply_message_id)
-            await message.reply(text, files=files)
-        else:
-            await channel.send(text, files=files)
+        try:
+            if reply_message_id is not None:
+                message: discord.Message = await channel.fetch_message(reply_message_id)
+                await message.reply(text, files=files)
+            else:
+                await channel.send(text, files=files)
+        except discord.HTTPException as discord_error:
+            raise BotApiError('discord', discord_error.text, discord_error.status)
 
     async def get_chats_from_group(self, chat_group_id: int):
         channels = await (await self.client.fetch_guild(chat_group_id)).fetch_channels()

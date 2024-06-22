@@ -56,6 +56,7 @@ class Bot(ABC):
 
         Raises:
             NotMessageableChatError: if message cant be sent in target chat
+            BotApiError: if error occurred on some platform api interaction
         """
         pass
 

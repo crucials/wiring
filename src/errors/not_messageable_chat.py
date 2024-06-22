@@ -6,4 +6,4 @@ class NotMessageableChatError(Exception):
         if chat_id is not None:
             super().__init__(f'cant send message in chat \'{chat_id}\' on {platform}')
         else:
-            super().__init__(f'cant send message in specified channel on {platform}')
+            super().__init__(f'cant send message in specified chat on {platform}')
