@@ -4,10 +4,12 @@ import logging
 from typing import Optional
 
 from telegram.ext import ApplicationBuilder, MessageHandler, ChatMemberHandler
+from telegram.error import TelegramError
 from telegram import (InputFile, InputMediaAudio, InputMediaDocument,
                       InputMediaPhoto, InputMediaVideo, Update)
 
 from bot_base import Bot
+from errors.bot_api_error import BotApiError
 from logging_options import DEFAULT_LOGGING_OPTIONS
 from platforms.telegram.entities_converter import telegram_entities_converter
 
@@ -75,22 +77,27 @@ class TelegramBot(Bot):
     async def send_message(self, chat_id, text: str,
                            reply_message_id=None,
                            files: Optional[list[BufferedReader]] = None):
-        if files is not None:
-            await self.client.bot.send_media_group(
-                chat_id,
-                [self.__convert_stream_to_telegram_media(file) for file in files],
-                caption=text,
-                reply_to_message_id=reply_message_id
-            )
-            return
+        try:
+            if files is not None:
+                await self.client.bot.send_media_group(
+                    chat_id,
+                    [self.__convert_stream_to_telegram_media(file) for file in files],
+                    caption=text,
+                    reply_to_message_id=reply_message_id
+                )
+                return
 
-        await self.client.bot.send_message(chat_id, text,
-                                           reply_to_message_id=reply_message_id)
+            await self.client.bot.send_message(chat_id, text,
+                                               reply_to_message_id=reply_message_id)
+        except TelegramError as telegram_error:
+                raise BotApiError('telegram', telegram_error.message)
 
     async def get_chats_from_group(self, chat_group_id: int):
-        return [telegram_entities_converter.convert_to_multi_platform_chat(
-            await self.client.bot.get_chat(chat_group_id)
-        )]
+        return [
+            telegram_entities_converter.convert_to_multi_platform_chat(
+                await self.client.bot.get_chat(chat_group_id)
+            )
+        ]
 
     def __convert_stream_to_telegram_media(self, stream: BufferedReader):
         file = InputFile(stream)
