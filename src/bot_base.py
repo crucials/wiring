@@ -63,6 +63,16 @@ class Bot(ABC):
 
     @abstractmethod
     async def get_chats_from_group(self, chat_group_id) -> list[MultiPlatformChat]:
+        """fetches a group of connected chats, for example, a discord server
+
+        Returns:
+            list of chats from specified group. if target platform doesnt support
+            chat groups, they are considered identical to chats,
+            so it returns list of one chat converted from request chat group
+
+        Raises:
+            BotApiError: if error occurred on some platform api interaction
+        """
         pass
 
     async def setup_commands(self, commands: list[Command], prefix: str = '/'):

@@ -19,12 +19,15 @@ class BotApiError(Exception):
             status_code: http error status code
         """
 
+        self.explanation = explanation
+        self.status_code = status_code
+
         error_text = f'failed to perform some action through {platform} api'
 
         if explanation is not None:
-            error_text = explanation
+            error_text = explanation + f'. platform: {platform}'
 
         if status_code is not None:
-            error_text += f'. status code: {status_code}'
+            error_text += f', status code: {status_code}'
 
         super().__init__(error_text)

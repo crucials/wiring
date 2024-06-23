@@ -90,6 +90,12 @@ class DiscordBot(Bot):
             raise BotApiError('discord', discord_error.text, discord_error.status)
 
     async def get_chats_from_group(self, chat_group_id: int):
-        channels = await (await self.client.fetch_guild(chat_group_id)).fetch_channels()
-        return [discord_entities_converter.convert_to_multi_platform_chat(channel)
-                for channel in channels]
+        try:
+            channels = await (await self.client.fetch_guild(chat_group_id)).fetch_channels()
+            return [discord_entities_converter.convert_to_multi_platform_chat(channel)
+                    for channel in channels]
+        except discord.HTTPException as discord_http_error:
+            raise BotApiError('discord', discord_http_error.text,
+                              discord_http_error.status)
+        except discord.errors.InvalidData:
+            raise BotApiError('discord', 'received invalid data from api')

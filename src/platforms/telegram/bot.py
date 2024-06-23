@@ -90,14 +90,17 @@ class TelegramBot(Bot):
             await self.client.bot.send_message(chat_id, text,
                                                reply_to_message_id=reply_message_id)
         except TelegramError as telegram_error:
-                raise BotApiError('telegram', telegram_error.message)
+            raise BotApiError('telegram', telegram_error.message)
 
     async def get_chats_from_group(self, chat_group_id: int):
-        return [
-            telegram_entities_converter.convert_to_multi_platform_chat(
-                await self.client.bot.get_chat(chat_group_id)
-            )
-        ]
+        try:
+            return [
+                telegram_entities_converter.convert_to_multi_platform_chat(
+                    await self.client.bot.get_chat(chat_group_id)
+                )
+            ]
+        except TelegramError as telegram_error:
+            raise BotApiError('telegram', telegram_error.message)
 
     def __convert_stream_to_telegram_media(self, stream: BufferedReader):
         file = InputFile(stream)

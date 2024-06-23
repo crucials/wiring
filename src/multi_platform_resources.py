@@ -18,8 +18,10 @@ class PlatformSpecificValue(TypedDict):
 
 @dataclass
 class MultiPlatformChatGroup:
-    """
-    represents a group of chats like discord server or discord private messages
+    """group of chats like discord server or discord private messages
+
+    if platform doesnt support chat groups, they are considered
+    identical to chats
     """
     platform: Platform
     id: MultiPlatformId
