@@ -87,7 +87,7 @@ class Bot(ABC):
         supported events:
             - `message` - when a message sent in any chat bot are member of.
                 ignores current bot's messages to prevent recursion
-            - `join` - when someone joins in chat bot are member of
+            - `join` - when someone joins in chat/chat group bot are member of
         """
         self._event_handlers.append(EventHandler(event, handler))
 
