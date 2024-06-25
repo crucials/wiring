@@ -1,4 +1,4 @@
-from multi_platform_resources import Platform
+from flectrum.multi_platform_resources import Platform
 
 
 class NotMessageableChatError(Exception):

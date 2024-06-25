@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 
-from multi_platform_resources import (MultiPlatformChatGroup, MultiPlatformMessage,
-                                      MultiPlatformChat, MultiPlatformUser)
+from flectrum.multi_platform_resources import (MultiPlatformChatGroup,
+                                               MultiPlatformMessage,
+                                               MultiPlatformChat,
+                                               MultiPlatformUser)
 
 
 class ToMultiPlatformConverter(ABC):

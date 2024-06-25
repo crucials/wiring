@@ -1,9 +1,9 @@
 import logging
 from typing import Optional
 
-from bot_base import Bot, Command, Event
-from logging_options import DEFAULT_LOGGING_OPTIONS
-from multi_platform_resources import MultiPlatformValue, PlatformSpecificValue
+from flectrum.bot_base import Bot, Command, Event
+from flectrum.logging_options import DEFAULT_LOGGING_OPTIONS
+from flectrum.multi_platform_resources import MultiPlatformValue, PlatformSpecificValue
 
 
 class PlatformBotNotFoundError(Exception):
