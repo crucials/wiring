@@ -3,11 +3,11 @@ from typing import Any, Callable, Optional
 
 import discord
 
-from flectrum.bot_base import Bot
-from flectrum.errors.bot_api_error import BotApiError
-from flectrum.platforms.discord._entities_converter import discord_entities_converter
-from flectrum.logging_options import DEFAULT_LOGGING_OPTIONS
-from flectrum.errors.not_messageable_chat import NotMessageableChatError
+from wiring.bot_base import Bot
+from wiring.errors.bot_api_error import BotApiError
+from wiring.platforms.discord._entities_converter import discord_entities_converter
+from wiring.logging_options import DEFAULT_LOGGING_OPTIONS
+from wiring.errors.not_messageable_chat import NotMessageableChatError
 
 
 class CustomClient(discord.Client):
@@ -38,7 +38,7 @@ class CustomClient(discord.Client):
             'join', discord_entities_converter.convert_to_multi_platform_user(member)
         )
 
-    async def on_member_leave(self, member: discord.Member):
+    async def on_member_remove(self, member: discord.Member):
         multi_platform_user = (discord_entities_converter
                                .convert_to_multi_platform_user(member))
         

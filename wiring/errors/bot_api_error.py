@@ -1,6 +1,6 @@
 from typing import Optional
 
-from flectrum.multi_platform_resources import Platform
+from wiring.multi_platform_resources import Platform
 
 
 class BotApiError(Exception):

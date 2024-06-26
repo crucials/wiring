@@ -4,11 +4,11 @@ import os
 
 from dotenv import load_dotenv
 
-from flectrum import (Bot, MultiPlatformMessage, MultiPlatformBot, MultiPlatformUser,
+from wiring import (Bot, MultiPlatformMessage, MultiPlatformBot, MultiPlatformUser,
                       Command)
-from flectrum.platforms.discord import DiscordBot
-from flectrum.platforms.telegram import TelegramBot
-from flectrum.logging_options import LoggingOptions
+from wiring.platforms.discord import DiscordBot
+from wiring.platforms.telegram import TelegramBot
+from wiring.logging_options import LoggingOptions
 
 
 load_dotenv()

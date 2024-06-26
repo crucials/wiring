@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from flectrum.multi_platform_resources import (MultiPlatformChatGroup,
+from wiring.multi_platform_resources import (MultiPlatformChatGroup,
                                                MultiPlatformMessage,
                                                MultiPlatformChat,
                                                MultiPlatformUser)

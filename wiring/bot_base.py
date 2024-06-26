@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from io import BufferedReader
 from typing import Any, Callable, Coroutine, Literal, Optional, Awaitable
 
-from flectrum.multi_platform_resources import MultiPlatformMessage, MultiPlatformChat
+from wiring.multi_platform_resources import MultiPlatformMessage, MultiPlatformChat
 
 
 CommandHandler = Callable[[Any, MultiPlatformMessage, list[str]], Coroutine]

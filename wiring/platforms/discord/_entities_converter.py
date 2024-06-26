@@ -1,9 +1,9 @@
 import discord
 
-from flectrum.multi_platform_resources import (MultiPlatformChatGroup, MultiPlatformMessage,
+from wiring.multi_platform_resources import (MultiPlatformChatGroup, MultiPlatformMessage,
                                       MultiPlatformChat, MultiPlatformUser)
-from flectrum.platforms.discord.channels import MessageableChannel
-from flectrum._to_multi_platform_converter import ToMultiPlatformConverter
+from wiring.platforms.discord.channels import MessageableChannel
+from wiring._to_multi_platform_converter import ToMultiPlatformConverter
 
 
 class DiscordEntitiesConverter(ToMultiPlatformConverter):
