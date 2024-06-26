@@ -8,10 +8,10 @@ from telegram.error import TelegramError
 from telegram import (InputFile, InputMediaAudio, InputMediaDocument,
                       InputMediaPhoto, InputMediaVideo, Update)
 
-from bot_base import Bot
-from errors.bot_api_error import BotApiError
-from logging_options import DEFAULT_LOGGING_OPTIONS
-from platforms.telegram.entities_converter import telegram_entities_converter
+from flectrum.bot_base import Bot
+from flectrum.errors.bot_api_error import BotApiError
+from flectrum.logging_options import DEFAULT_LOGGING_OPTIONS
+from flectrum.platforms.telegram._entities_converter import telegram_entities_converter
 
 
 class TelegramBot(Bot):

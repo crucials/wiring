@@ -5,7 +5,7 @@ import discord
 
 from flectrum.bot_base import Bot
 from flectrum.errors.bot_api_error import BotApiError
-from flectrum.platforms.discord.entities_converter import discord_entities_converter
+from flectrum.platforms.discord._entities_converter import discord_entities_converter
 from flectrum.logging_options import DEFAULT_LOGGING_OPTIONS
 from flectrum.errors.not_messageable_chat import NotMessageableChatError
 

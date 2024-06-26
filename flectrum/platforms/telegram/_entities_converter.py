@@ -2,8 +2,8 @@ import logging
 from typing import Optional
 from telegram import Chat, Message, User
 
-from to_multi_platform_converter import ToMultiPlatformConverter
-from multi_platform_resources import (MultiPlatformChatGroup, MultiPlatformMessage,
+from flectrum._to_multi_platform_converter import ToMultiPlatformConverter
+from flectrum.multi_platform_resources import (MultiPlatformChatGroup, MultiPlatformMessage,
                                       MultiPlatformChat, MultiPlatformUser)
 
 
