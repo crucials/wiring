@@ -38,6 +38,18 @@ class CustomClient(discord.Client):
             'join', discord_entities_converter.convert_to_multi_platform_user(member)
         )
 
+    async def on_member_leave(self, member: discord.Member):
+        multi_platform_user = (discord_entities_converter
+                               .convert_to_multi_platform_user(member))
+        
+        self.__run_event_handler_if_exists(
+            'all', 'leave', multi_platform_user
+        )
+
+        self.__run_event_handler_if_exists(
+            'leave', multi_platform_user
+        )
+
     def __run_event_handler_if_exists(self, event: str, *args):
         do_on_event = self._event_handlers.get(event)
 

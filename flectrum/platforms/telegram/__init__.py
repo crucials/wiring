@@ -31,22 +31,36 @@ class TelegramBot(Bot):
         # mess, need to move it to a different module/class
         async def handle_update(update: Update, context):
             if update.message is not None:
-                message = telegram_entities_converter.convert_to_multi_platform_message(
-                    update.message
+                multi_platform_chat = (
+                    telegram_entities_converter
+                    .convert_to_multi_platform_chat_group(update.message.chat)
                 )
 
-                self._run_event_handlers('message', message)
+                multi_platform_message = (
+                    telegram_entities_converter
+                    .convert_to_multi_platform_message(update.message)
+                )
 
-                self._check_message_for_command(message)
+                self._run_event_handlers('message', multi_platform_message)
+
+                self._check_message_for_command(multi_platform_message)
 
                 for new_member in update.message.new_chat_members or []:
+    
                     self._run_event_handlers(
                         'join',
                         telegram_entities_converter.convert_to_multi_platform_user(
                             new_member,
-                            telegram_entities_converter.convert_to_multi_platform_chat_group(
-                                update.message.chat
-                            )
+                            multi_platform_chat
+                        )
+                    )
+
+                if update.message.left_chat_member is not None:
+                    self._run_event_handlers(
+                        'leave',
+                        telegram_entities_converter.convert_to_multi_platform_user(
+                            update.message.left_chat_member,
+                            multi_platform_chat
                         )
                     )
 

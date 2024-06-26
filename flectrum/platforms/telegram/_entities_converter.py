@@ -1,6 +1,6 @@
 import logging
 from typing import Optional
-from telegram import Chat, Message, User
+from telegram import Chat, Message, User, ChatFullInfo
 
 from flectrum._to_multi_platform_converter import ToMultiPlatformConverter
 from flectrum.multi_platform_resources import (MultiPlatformChatGroup, MultiPlatformMessage,
@@ -16,7 +16,7 @@ class TelegramEntitiesConverter(ToMultiPlatformConverter):
                                       chat_group.id,
                                       chat_group.title or chat_group.full_name)
 
-    def convert_to_multi_platform_chat(self, chat: Chat):
+    def convert_to_multi_platform_chat(self, chat: Chat | ChatFullInfo):
         return MultiPlatformChat('telegram',
                                  chat.id,
                                  chat.title or chat.full_name)

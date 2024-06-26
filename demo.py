@@ -41,6 +41,15 @@ async def send_greetings(bot: Bot, user: MultiPlatformUser):
                 logger.error(error)
 
 
+async def send_goodbye(bot: Bot, user: MultiPlatformUser):
+    if user.from_chat_group is not None:
+        for chat in await bot.get_chats_from_group(user.from_chat_group.id):
+            try:
+                await bot.send_message(chat.id, 'bye ' + user.username)
+            except Exception as error:
+                logger.error(error)
+
+
 async def start_bots():
     logging_options: LoggingOptions = {'handler': handler,
                                        'level': logging.INFO}
@@ -58,6 +67,7 @@ async def start_bots():
         ])
 
         bot.add_event_handler('join', send_greetings)
+        bot.add_event_handler('leave', send_goodbye)
 
         await bot.listen_to_events()
 
