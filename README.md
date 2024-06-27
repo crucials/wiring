@@ -1,4 +1,4 @@
-![logo with a label 'one bot codebase - multiple platforms'](https://github.com/crucials/wiring/assets/83793845/4b987f42-1718-4a83-83b1-dc5556da28af)
+![logo with a label 'one bot codebase - multiple platforms'](https://i.ibb.co/1QGmCQx/343200157-4b987f42-1718-4a83-83b1-dc5556da28af.png)
 
 seamless api for developing bots that run on multiple platforms. **discord** and **telegram** are only supported for now
 
