@@ -35,7 +35,7 @@ TELEGRAM_TOKEN = 'place your token here or better load it from enviroment variab
 async def send_commands_list(bot: Bot, message: MultiPlatformMessage,
                              args: list[str]):
     commands_list = '\n'.join(['/' + command.name.__str__() for command
-                               in bot.commands]
+                               in bot.commands])
 
     await bot.send_message(
         message.chat.id,
