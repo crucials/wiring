@@ -59,7 +59,6 @@ class Bot(ABC):
             BotApiError: if error occurred on some platform api interaction
             ValueError: the files list is not of the appropriate size
         """
-        pass
 
     @abstractmethod
     async def get_chats_from_group(self, chat_group_id) -> list[MultiPlatformChat]:
@@ -73,7 +72,6 @@ class Bot(ABC):
         Raises:
             BotApiError: if error occurred on some platform api interaction
         """
-        pass
 
     async def setup_commands(self, commands: list[Command], prefix: str = '/'):
         self.commands_prefix = prefix
@@ -99,9 +97,9 @@ class Bot(ABC):
         await self.stop()
 
     def _run_event_handlers(self, event: Event, event_data=None):
-        [asyncio.create_task(handler.do_on_event(self, event_data))
-         for handler in self._event_handlers
-         if handler.event == event]
+        for handler in self._event_handlers:
+            if handler.event == event:
+                asyncio.create_task(handler.do_on_event(self, event_data))
 
     def _check_message_for_command(self, message: MultiPlatformMessage):
         def has_command(text: str, command: Command):
@@ -110,8 +108,8 @@ class Bot(ABC):
             if isinstance(command.name, list):
                 return len([name for name in command.name
                             if cleaned_text == name.casefold()]) > 0
-            else:
-                return command.name.casefold() == cleaned_text
+
+            return command.name.casefold() == cleaned_text
 
         if not message.text or not message.text.startswith(self.commands_prefix):
             return
