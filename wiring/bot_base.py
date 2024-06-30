@@ -1,10 +1,13 @@
 from abc import ABC, abstractmethod
 import asyncio
 from dataclasses import dataclass
+from datetime import datetime
 from io import BufferedReader
 from typing import Any, Callable, Coroutine, Literal, Optional, Awaitable
 
-from wiring.multi_platform_resources import MultiPlatformMessage, MultiPlatformChat
+from wiring.multi_platform_resources import (MultiPlatformMessage,
+                                             MultiPlatformChat,
+                                             MultiPlatformUser)
 
 
 CommandHandler = Callable[[Any, MultiPlatformMessage, list[str]], Coroutine]
@@ -71,6 +74,43 @@ class Bot(ABC):
 
         Raises:
             BotApiError: if error occurred on some platform api interaction
+            PlatformBotNotFoundError: if bot for specified platform was
+                not added when using `MultiPlatformBot` subclass
+        """
+
+    @abstractmethod
+    async def ban(self, chat_group_id, user_id, reason: Optional[str] = None,
+                  until_date: Optional[datetime] = None):
+        """bans the user from the specified chat group
+
+        Args:
+            chat_group_id: id of the chat group entity (like a discord server
+                or a telegram chat) where to ban
+            user_id: id of the user to be banned
+            reason (str): ban reason, not supported on some platforms like telegram
+            until_date (`datetime.datetime`): date when to remove a ban,
+                not supported on some platforms like discord
+
+        Raises:
+            BotApiError: if error occurred on platform api interaction. for example,
+                if you dont have a permission to ban
+        """
+
+    @abstractmethod
+    async def get_user_by_name(self,
+                               username,
+                               chat_group_id) -> Optional[MultiPlatformUser]:
+        """get user that takes part in specified chat group by username
+
+        Args:
+            username (str): username without prefixes like '@'
+            chat_group_id: id of chat group where to search for user
+
+        Raises:
+            BotApiError: if error occurred on platform api interaction. for example,
+                if you cant access specified chat group
+            ActionNotSupported: if this action is not implemented or is impossible
+                for some platforms like telegram
         """
 
     async def setup_commands(self, commands: list[Command], prefix: str = '/'):

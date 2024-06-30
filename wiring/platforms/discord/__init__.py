@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from typing import Any, Callable, Optional
 
 import discord
@@ -7,7 +8,7 @@ from wiring.bot_base import Bot
 from wiring.errors.bot_api_error import BotApiError
 from wiring.platforms.discord._entities_converter import discord_entities_converter
 from wiring.logging_options import DEFAULT_LOGGING_OPTIONS
-from wiring.errors.not_messageable_chat import NotMessageableChatError
+from wiring.errors.not_messageable_chat_error import NotMessageableChatError
 
 
 class CustomClient(discord.Client):
@@ -71,6 +72,8 @@ class DiscordBot(Bot):
         })
         self._token = token
 
+        self.logger = logging.getLogger('discord.client')
+
         discord.utils.setup_logging(handler=logging_options['handler']
                                     or discord.utils.MISSING,
                                     level=logging_options['level'])
@@ -111,3 +114,24 @@ class DiscordBot(Bot):
                               discord_http_error.status)
         except discord.errors.InvalidData:
             raise BotApiError('discord', 'received invalid data from api')
+
+    async def ban(self, chat_group_id: int, user_id: int, reason=None, until_date=None):
+        try:
+            if until_date is not None:
+                self.logger.warning('ignoring `until_date` param for `Bot.ban` method, '
+                                    + 'because discord doesnt have temp bans')
+
+            guild = await self.client.fetch_guild(chat_group_id)
+            await (await guild.fetch_member(user_id)).ban(reason=reason)
+        except discord.HTTPException as discord_http_error:
+            raise BotApiError('discord', discord_http_error.text,
+                              discord_http_error.status)
+
+    async def get_user_by_name(self, username: str, chat_group_id: int):
+        guild = await self.client.fetch_guild(chat_group_id)
+        member = await discord.utils.get(guild.fetch_members(), name=username)
+
+        if member is None:
+            return None
+
+        return discord_entities_converter.convert_to_multi_platform_user(member)

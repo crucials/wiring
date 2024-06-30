@@ -25,10 +25,10 @@ class DiscordEntitiesConverter(ToMultiPlatformConverter):
 
     def convert_to_multi_platform_user(self, user: discord.User | discord.Member):
         if isinstance(user, discord.Member):
-            return MultiPlatformUser('discord', user.name,
+            return MultiPlatformUser('discord', user.id, user.name,
                                      self.convert_to_multi_platform_chat_group(user.guild))
 
-        return MultiPlatformUser('discord', user.name, None)
+        return MultiPlatformUser('discord', user.id, user.name, None)
 
     def convert_to_multi_platform_message(
         self, message: discord.Message

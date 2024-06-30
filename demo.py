@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 from wiring import (Bot, MultiPlatformMessage, MultiPlatformBot, MultiPlatformUser,
                     Command)
+from wiring.errors.action_not_supported_error import ActionNotSupportedError
 from wiring.platforms.discord import DiscordBot
 from wiring.platforms.telegram import TelegramBot
 from wiring.logging_options import LoggingOptions
@@ -41,6 +42,31 @@ async def send_greetings(bot: Bot, user: MultiPlatformUser):
                 logger.error(error)
 
 
+async def ban(bot: Bot, message: MultiPlatformMessage, args: list[str]):
+    if message.chat is None or message.chat_group is None:
+        return
+
+    if len(args) < 1:
+        await bot.send_message(message.chat.id, 'specify a name/id of a user',
+                               reply_message_id=message.id)
+        return
+
+    try:
+        user = await bot.get_user_by_name(args[0].removeprefix('@'),
+                                          message.chat_group.id)
+
+        if user is not None:
+            await bot.ban(message.chat_group.id, user.id, None)
+            await bot.send_message(message.chat.id, 'banned',
+                                   reply_message_id=message.id)
+        else:
+            await bot.send_message(message.chat.id, 'cant find the user',
+                                   reply_message_id=message.id)
+    except ActionNotSupportedError:
+        await bot.send_message(message.chat.id, 'banning is not supported here',
+                               reply_message_id=message.id)
+
+
 async def send_goodbye(bot: Bot, user: MultiPlatformUser):
     if user.from_chat_group is not None:
         for chat in await bot.get_chats_from_group(user.from_chat_group.id):
@@ -63,7 +89,8 @@ async def start_bots():
 
     async with bot:
         await bot.setup_commands([
-            Command(['start', 'help', 'help1'], send_commands_list)
+            Command(['start', 'help', 'help1'], send_commands_list),
+            Command('ban-user', ban)
         ])
 
         bot.add_event_handler('join', send_greetings)

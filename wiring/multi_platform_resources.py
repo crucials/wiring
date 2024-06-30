@@ -41,6 +41,7 @@ class MultiPlatformChat:
 @dataclass
 class MultiPlatformUser:
     platform: Platform
+    id: MultiPlatformId
     username: str
     from_chat_group: Optional[MultiPlatformChatGroup]
 

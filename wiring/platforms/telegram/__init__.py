@@ -9,6 +9,7 @@ from telegram import (InputFile, InputMediaAudio, InputMediaDocument,
                       InputMediaPhoto, InputMediaVideo, Update)
 
 from wiring.bot_base import Bot
+from wiring.errors.action_not_supported_error import ActionNotSupportedError
 from wiring.errors.bot_api_error import BotApiError
 from wiring.logging_options import DEFAULT_LOGGING_OPTIONS
 from wiring.platforms.telegram._entities_converter import telegram_entities_converter
@@ -114,6 +115,21 @@ class TelegramBot(Bot):
             ]
         except TelegramError as telegram_error:
             raise BotApiError('telegram', telegram_error.message)
+
+    async def ban(self, chat_group_id: int, user_id: int, reason=None, until_date=None):
+        try:
+            if reason is not None:
+                self.logger.warning('ignoring `reason` param for `Bot.ban` method, '
+                                    + 'as it\'s not supported in telegram')
+
+            await self.client.bot.ban_chat_member(chat_group_id, user_id,
+                                                  until_date=until_date)
+        except TelegramError as telegram_error:
+            raise BotApiError('telegram', telegram_error.message)
+
+    async def get_user_by_name(self, username: str, chat_group_id: int):
+        raise ActionNotSupportedError('getting users by their usernames is not '
+                                      + 'possible on telegram')
 
     def __convert_stream_to_telegram_media(self, stream: BufferedReader):
         file = InputFile(stream)

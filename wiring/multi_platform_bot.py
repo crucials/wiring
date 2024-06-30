@@ -3,7 +3,8 @@ from typing import Optional
 
 from wiring.bot_base import Bot, Command, Event
 from wiring.logging_options import DEFAULT_LOGGING_OPTIONS
-from wiring.multi_platform_resources import MultiPlatformValue, PlatformSpecificValue
+from wiring.multi_platform_resources import (MultiPlatformValue,
+                                             PlatformSpecificValue)
 
 
 class PlatformBotNotFoundError(Exception):
@@ -52,18 +53,32 @@ class MultiPlatformBot(Bot):
                                        files)
 
     async def get_chats_from_group(self, chat_group_id: PlatformSpecificValue):
-        """fetches chats grouped in some entity like discord server
-
-        Raises:
-            PlatformBotNotFoundError: if bot for specified platform was not added
-        """
-        needed_bots = [bot for bot in self.platform_bots
-                       if bot.platform == chat_group_id['platform']]
-
-        if len(needed_bots) == 0:
-            raise PlatformBotNotFoundError(chat_group_id['platform'])
+        needed_bots = self.__get_bots_on_platform(chat_group_id['platform'])
 
         return await needed_bots[0].get_chats_from_group(chat_group_id['value'])
+
+    async def ban(self,
+                  chat_group_id: MultiPlatformValue,
+                  user_id: MultiPlatformValue,
+                  reason=None,
+                  until_date=None):
+        for bot in self.platform_bots:
+            if bot.platform not in chat_group_id or bot.platform not in user_id:
+                continue
+
+            platform_chat_group_id = chat_group_id[bot.platform]
+            platform_user_id = user_id[bot.platform]
+
+            await bot.ban(platform_chat_group_id, platform_user_id, reason,
+                          until_date)
+
+    async def get_user_by_name(self,
+                               username: PlatformSpecificValue,
+                               chat_group_id: PlatformSpecificValue):
+        platform_bot = self.__get_bots_on_platform(username['platform'])[0]
+
+        return await platform_bot.get_user_by_name(username['value'],
+                                                   chat_group_id['value'])
 
     def add_event_handler(self, event: Event, handler):
         super().add_event_handler(event, handler)
@@ -75,3 +90,12 @@ class MultiPlatformBot(Bot):
             await bot.setup_commands(commands, prefix)
 
         await super().setup_commands(commands, prefix)
+
+    def __get_bots_on_platform(self, platform: str):
+        needed_bots = [bot for bot in self.platform_bots
+                       if bot.platform == platform]
+
+        if len(needed_bots) == 0:
+            raise PlatformBotNotFoundError(platform)
+
+        return needed_bots
