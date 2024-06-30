@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 
 from wiring.multi_platform_resources import (MultiPlatformChatGroup,
-                                               MultiPlatformMessage,
-                                               MultiPlatformChat,
-                                               MultiPlatformUser)
+                                             MultiPlatformMessage,
+                                             MultiPlatformChat,
+                                             MultiPlatformUser)
 
 
 class ToMultiPlatformConverter(ABC):

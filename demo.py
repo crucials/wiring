@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 
 from wiring import (Bot, MultiPlatformMessage, MultiPlatformBot, MultiPlatformUser,
-                      Command)
+                    Command)
 from wiring.platforms.discord import DiscordBot
 from wiring.platforms.telegram import TelegramBot
 from wiring.logging_options import LoggingOptions

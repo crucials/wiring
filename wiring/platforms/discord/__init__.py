@@ -41,7 +41,7 @@ class CustomClient(discord.Client):
     async def on_member_remove(self, member: discord.Member):
         multi_platform_user = (discord_entities_converter
                                .convert_to_multi_platform_user(member))
-        
+
         self.__run_event_handler_if_exists(
             'all', 'leave', multi_platform_user
         )

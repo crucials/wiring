@@ -4,7 +4,7 @@ from telegram import Chat, Message, User, ChatFullInfo
 
 from wiring._to_multi_platform_converter import ToMultiPlatformConverter
 from wiring.multi_platform_resources import (MultiPlatformChatGroup, MultiPlatformMessage,
-                                      MultiPlatformChat, MultiPlatformUser)
+                                             MultiPlatformChat, MultiPlatformUser)
 
 
 class TelegramEntitiesConverter(ToMultiPlatformConverter):

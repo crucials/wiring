@@ -1,7 +1,7 @@
 import discord
 
 from wiring.multi_platform_resources import (MultiPlatformChatGroup, MultiPlatformMessage,
-                                      MultiPlatformChat, MultiPlatformUser)
+                                             MultiPlatformChat, MultiPlatformUser)
 from wiring.platforms.discord.channels import MessageableChannel
 from wiring._to_multi_platform_converter import ToMultiPlatformConverter
 

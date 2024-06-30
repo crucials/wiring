@@ -46,7 +46,6 @@ class TelegramBot(Bot):
                 self._check_message_for_command(multi_platform_message)
 
                 for new_member in update.message.new_chat_members or []:
-    
                     self._run_event_handlers(
                         'join',
                         telegram_entities_converter.convert_to_multi_platform_user(

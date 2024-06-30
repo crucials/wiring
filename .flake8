@@ -2,3 +2,5 @@
 ignore = E501, W503
 exclude =
     .venv
+per-file-ignores =
+    wiring/__init__.py:F401
