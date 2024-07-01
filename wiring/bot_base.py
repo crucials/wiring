@@ -73,6 +73,7 @@ class Bot(ABC):
             so it returns list of one chat converted from request chat group
 
         Raises:
+            NotFoundError: if some resource cannot be found, subclass of `BotApiError`
             BotApiError: if error occurred on some platform api interaction
             PlatformBotNotFoundError: if bot for specified platform was
                 not added when using `MultiPlatformBot` subclass
@@ -92,6 +93,7 @@ class Bot(ABC):
                 not supported on some platforms like discord
 
         Raises:
+            NotFoundError: if some resource cannot be found, subclass of `BotApiError`
             BotApiError: if error occurred on platform api interaction. for example,
                 if you dont have a permission to ban
         """
@@ -107,6 +109,7 @@ class Bot(ABC):
             chat_group_id: id of chat group where to search for user
 
         Raises:
+            NotFoundError: if user cannot be found, subclass of `BotApiError`
             BotApiError: if error occurred on platform api interaction. for example,
                 if you cant access specified chat group
             ActionNotSupported: if this action is not implemented or is impossible

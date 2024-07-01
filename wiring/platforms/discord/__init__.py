@@ -6,6 +6,7 @@ import discord
 
 from wiring.bot_base import Bot
 from wiring.errors.bot_api_error import BotApiError
+from wiring.errors.not_found_error import NotFoundError
 from wiring.platforms.discord._entities_converter import discord_entities_converter
 from wiring.logging_options import DEFAULT_LOGGING_OPTIONS
 from wiring.errors.not_messageable_chat_error import NotMessageableChatError
@@ -101,6 +102,8 @@ class DiscordBot(Bot):
                 await message.reply(text, files=files)
             else:
                 await channel.send(text, files=files)
+        except discord.NotFound as discord_not_found_error:
+            raise NotFoundError('discord', discord_not_found_error.text)
         except discord.HTTPException as discord_error:
             raise BotApiError('discord', discord_error.text, discord_error.status)
 
@@ -109,6 +112,8 @@ class DiscordBot(Bot):
             channels = await (await self.client.fetch_guild(chat_group_id)).fetch_channels()
             return [discord_entities_converter.convert_to_multi_platform_chat(channel)
                     for channel in channels]
+        except discord.NotFound as discord_not_found_error:
+            raise NotFoundError('discord', discord_not_found_error.text)
         except discord.HTTPException as discord_http_error:
             raise BotApiError('discord', discord_http_error.text,
                               discord_http_error.status)
@@ -123,15 +128,24 @@ class DiscordBot(Bot):
 
             guild = await self.client.fetch_guild(chat_group_id)
             await (await guild.fetch_member(user_id)).ban(reason=reason)
+        except discord.NotFound as discord_not_found_error:
+            raise NotFoundError('discord', discord_not_found_error.text)
         except discord.HTTPException as discord_http_error:
             raise BotApiError('discord', discord_http_error.text,
                               discord_http_error.status)
 
     async def get_user_by_name(self, username: str, chat_group_id: int):
-        guild = await self.client.fetch_guild(chat_group_id)
-        member = await discord.utils.get(guild.fetch_members(), name=username)
+        try:
+            guild = await self.client.fetch_guild(chat_group_id)
+            member = await discord.utils.get(guild.fetch_members(), name=username)
 
-        if member is None:
-            return None
+            if member is None:
+                raise NotFoundError('discord', f'user with name \'{username}\' cant be '
+                                    + 'found in specified discord chat group')
 
-        return discord_entities_converter.convert_to_multi_platform_user(member)
+            return discord_entities_converter.convert_to_multi_platform_user(member)
+        except discord.NotFound as discord_not_found_error:
+            raise NotFoundError('discord', discord_not_found_error.text)
+        except discord.HTTPException as discord_http_error:
+            raise BotApiError('discord', discord_http_error.text,
+                              discord_http_error.status)
