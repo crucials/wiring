@@ -13,6 +13,34 @@ class PlatformBotNotFoundError(Exception):
 
 
 class MultiPlatformBot(Bot):
+    """bot that aggregates bots with specific platform (e.g. `DiscordBot`, `Telegram`)
+
+    when calling some action, for example `ban` method, this class accepts
+    platform-dependent params like `user_id` as a dictionary
+    that contains a value for each optional platform (for example:
+    `{'discord': '1u2412dfsadf', 'telegram': '28ud2da_&546'}`). then it calls needed
+    action in first found bot with matched platform
+
+    Initializing example:
+        ```
+        bot = MultiPlatformBot(logging_options=logging_options)
+
+        bot.platform_bots = [
+            DiscordBot(os.environ['DISCORD_BOT_TOKEN'], logging_options),
+            TelegramBot(os.environ['TELEGRAM_BOT_TOKEN'], logging_options)
+        ]
+
+        async with bot:
+            ...
+        ```
+
+    Sending message example:
+        ```
+        async with bot:
+            await bot.send_message(chat_id={'discord': '123', 'telegram': '321'},
+                                   text='test message')
+        ```
+    """
     def __init__(self, logging_options=DEFAULT_LOGGING_OPTIONS):
         super().__init__()
         self.platform_bots: list[Bot] = []
