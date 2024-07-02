@@ -11,22 +11,17 @@ from telegram import (InputFile, InputMediaAudio, InputMediaDocument,
 from wiring.bot_base import Bot
 from wiring.errors.action_not_supported_error import ActionNotSupportedError
 from wiring.errors.bot_api_error import BotApiError
-from wiring.logging_options import DEFAULT_LOGGING_OPTIONS
 from wiring.platforms.telegram._entities_converter import telegram_entities_converter
 
 
 class TelegramBot(Bot):
-    def __init__(self, token: str, logging_options=DEFAULT_LOGGING_OPTIONS):
+    def __init__(self, token: str):
         super().__init__('telegram')
         self.client = ApplicationBuilder().token(token).build()
 
         self.__setup_event_handlers()
 
-        self.logger = logging.getLogger('telegram')
-
-        if logging_options['handler']:
-            self.logger.addHandler(logging_options['handler'])
-            self.logger.setLevel(logging_options['level'])
+        self.logger = logging.getLogger('wiring.telegram')
 
     def __setup_event_handlers(self):
         # mess, need to move it to a different module/class

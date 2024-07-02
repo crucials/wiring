@@ -2,7 +2,6 @@ import logging
 from typing import Optional
 
 from wiring.bot_base import Bot, Command, Event
-from wiring.logging_options import DEFAULT_LOGGING_OPTIONS
 from wiring.multi_platform_resources import (MultiPlatformValue,
                                              PlatformSpecificValue)
 
@@ -41,12 +40,11 @@ class MultiPlatformBot(Bot):
                                    text='test message')
         ```
     """
-    def __init__(self, logging_options=DEFAULT_LOGGING_OPTIONS):
+    def __init__(self):
         super().__init__()
         self.platform_bots: list[Bot] = []
 
-        self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging_options['level'])
+        self.logger = logging.getLogger('wiring.multi_platform')
 
     async def start(self):
         self.logger.info('started')

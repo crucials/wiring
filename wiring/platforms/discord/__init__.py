@@ -8,7 +8,6 @@ from wiring.bot_base import Bot
 from wiring.errors.bot_api_error import BotApiError
 from wiring.errors.not_found_error import NotFoundError
 from wiring.platforms.discord._entities_converter import discord_entities_converter
-from wiring.logging_options import DEFAULT_LOGGING_OPTIONS
 from wiring.errors.not_messageable_chat_error import NotMessageableChatError
 
 
@@ -60,7 +59,7 @@ class CustomClient(discord.Client):
 
 
 class DiscordBot(Bot):
-    def __init__(self, token: str, logging_options=DEFAULT_LOGGING_OPTIONS):
+    def __init__(self, token: str):
         super().__init__('discord')
 
         intents = discord.Intents.default()
@@ -73,11 +72,7 @@ class DiscordBot(Bot):
         })
         self._token = token
 
-        self.logger = logging.getLogger('discord.client')
-
-        discord.utils.setup_logging(handler=logging_options['handler']
-                                    or discord.utils.MISSING,
-                                    level=logging_options['level'])
+        self.logger = logging.getLogger('wiring.discord')
 
     async def start(self):
         await self.client.login(self._token)

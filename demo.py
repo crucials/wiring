@@ -9,15 +9,14 @@ from wiring import (Bot, MultiPlatformMessage, MultiPlatformBot, MultiPlatformUs
 from wiring.errors.action_not_supported_error import ActionNotSupportedError
 from wiring.platforms.discord import DiscordBot
 from wiring.platforms.telegram import TelegramBot
-from wiring.logging_options import LoggingOptions
 
 
 load_dotenv()
 
-handler = logging.StreamHandler()
-
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s: [%(levelname)s] %(name)s - %(message)s',
+                    datefmt='%m/%d/%Y %I:%M:%S %p')
 logger = logging.getLogger()
-logger.addHandler(handler)
 
 
 async def send_commands_list(bot: Bot, message: MultiPlatformMessage,
@@ -27,7 +26,7 @@ async def send_commands_list(bot: Bot, message: MultiPlatformMessage,
 
     await bot.send_message(
         message.chat.id,
-        'available commands:\n' + '\n'.join(['/' + command.name.__str__() for command
+        'available commands:\n' + '\n'.join(['/' + str(command.name) for command
                                              in bot.commands]),
         reply_message_id=message.id
     )
@@ -77,14 +76,11 @@ async def send_goodbye(bot: Bot, user: MultiPlatformUser):
 
 
 async def start_bots():
-    logging_options: LoggingOptions = {'handler': handler,
-                                       'level': logging.INFO}
-
-    bot = MultiPlatformBot(logging_options=logging_options)
+    bot = MultiPlatformBot()
 
     bot.platform_bots = [
-        DiscordBot(os.environ['DISCORD_BOT_TOKEN'], logging_options),
-        TelegramBot(os.environ['TELEGRAM_BOT_TOKEN'], logging_options)
+        DiscordBot(os.environ['DISCORD_BOT_TOKEN']),
+        TelegramBot(os.environ['TELEGRAM_BOT_TOKEN'])
     ]
 
     async with bot:

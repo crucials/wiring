@@ -9,7 +9,7 @@ from wiring.multi_platform_resources import (MultiPlatformChatGroup, MultiPlatfo
 
 class TelegramEntitiesConverter(ToMultiPlatformConverter):
     def convert_to_multi_platform_chat_group(self, chat_group: Chat):
-        logger = logging.getLogger('telegram')
+        logger = logging.getLogger('wiring.telegram')
         logger.warning('chat group is the same entity as the chat for telegram')
 
         return MultiPlatformChatGroup('telegram',
