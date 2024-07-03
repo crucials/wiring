@@ -102,6 +102,14 @@ class DiscordBot(Bot):
         except discord.HTTPException as discord_error:
             raise BotApiError('discord', discord_error.text, discord_error.status)
 
+    async def get_chat_groups(self, on_platform=None):
+        guilds = [guild async for guild in self.client.fetch_guilds(limit=None)]
+
+        return [
+            discord_entities_converter.convert_to_multi_platform_chat_group(guild)
+            for guild in guilds
+        ]
+
     async def get_chats_from_group(self, chat_group_id: int):
         try:
             channels = await (await self.client.fetch_guild(chat_group_id)).fetch_channels()
@@ -132,7 +140,8 @@ class DiscordBot(Bot):
     async def get_user_by_name(self, username: str, chat_group_id: int):
         try:
             guild = await self.client.fetch_guild(chat_group_id)
-            member = await discord.utils.get(guild.fetch_members(), name=username)
+            member = await discord.utils.get(guild.fetch_members(limit=None),
+                                             name=username)
 
             if member is None:
                 raise NotFoundError('discord', f'user with name \'{username}\' cant be '

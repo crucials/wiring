@@ -5,9 +5,9 @@ from datetime import datetime
 from io import BufferedReader
 from typing import Any, Callable, Coroutine, Literal, Optional, Awaitable
 
-from wiring.multi_platform_resources import (MultiPlatformMessage,
-                                             MultiPlatformChat,
-                                             MultiPlatformUser)
+from wiring.multi_platform_resources import (MultiPlatformChatGroup, MultiPlatformMessage,
+                                             MultiPlatformChat, MultiPlatformUser,
+                                             Platform)
 
 
 CommandHandler = Callable[[Any, MultiPlatformMessage, list[str]], Coroutine]
@@ -61,6 +61,31 @@ class Bot(ABC):
             NotMessageableChatError: if message cant be sent in target chat
             BotApiError: if error occurred on some platform api interaction
             ValueError: the files list is not of the appropriate size
+        """
+
+    @abstractmethod
+    async def get_chat_groups(
+        self, on_platform: Optional[Platform] = None
+    ) -> list[MultiPlatformChatGroup]:
+        """fetches chat groups the bot is member of
+
+        Args:
+            on_platform: on what platform bot to use, must be specified only **when
+                calling this method from `MultiPlatformBot` class**
+
+        Returns:
+            list of chat groups. if target platform doesnt support
+            chat groups, they are considered identical to chats,
+            so it returns chats converted chat groups
+
+        Raises:
+            BotApiError: if error occurred on some platform api interactions
+            PlatformBotNotFoundError: if bot for specified platform was
+                not added when using `MultiPlatformBot` subclass
+            ValueError: if `on_platform` param is not specified when using
+                `MultiPlatformBot` class
+            ActionNotSupported: if this action is not implemented or is impossible
+                for some platforms like telegram
         """
 
     @abstractmethod

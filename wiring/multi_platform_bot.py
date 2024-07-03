@@ -2,7 +2,7 @@ import logging
 from typing import Optional
 
 from wiring.bot_base import Bot, Command, Event
-from wiring.multi_platform_resources import (MultiPlatformValue,
+from wiring.multi_platform_resources import (MultiPlatformValue, Platform,
                                              PlatformSpecificValue)
 
 
@@ -22,11 +22,11 @@ class MultiPlatformBot(Bot):
 
     Initializing example:
         ```
-        bot = MultiPlatformBot(logging_options=logging_options)
+        bot = MultiPlatformBot()
 
         bot.platform_bots = [
-            DiscordBot(os.environ['DISCORD_BOT_TOKEN'], logging_options),
-            TelegramBot(os.environ['TELEGRAM_BOT_TOKEN'], logging_options)
+            DiscordBot(os.environ['DISCORD_BOT_TOKEN']),
+            TelegramBot(os.environ['TELEGRAM_BOT_TOKEN'])
         ]
 
         async with bot:
@@ -78,6 +78,14 @@ class MultiPlatformBot(Bot):
                                        platform_reply_message_id,
                                        files)
 
+    async def get_chat_groups(self, on_platform=None):
+        if on_platform is None:
+            raise ValueError('param `on_platform` must be specified when using '
+                             + '`MultiPlatformBot` class')
+
+        needed_bots = self.__get_bots_on_platform(on_platform)
+        return await needed_bots[0].get_chat_groups()
+
     async def get_chats_from_group(self, chat_group_id: PlatformSpecificValue):
         needed_bots = self.__get_bots_on_platform(chat_group_id['platform'])
 
@@ -117,7 +125,7 @@ class MultiPlatformBot(Bot):
 
         await super().setup_commands(commands, prefix)
 
-    def __get_bots_on_platform(self, platform: str):
+    def __get_bots_on_platform(self, platform: Platform):
         needed_bots = [bot for bot in self.platform_bots
                        if bot.platform == platform]
 

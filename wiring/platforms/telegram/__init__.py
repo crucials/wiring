@@ -101,6 +101,13 @@ class TelegramBot(Bot):
         except TelegramError as telegram_error:
             raise BotApiError('telegram', telegram_error.message)
 
+    async def get_chat_groups(self, on_platform=None):
+        raise ActionNotSupportedError('it seems telegram api does not permit to get '
+                                      + 'all chats your bot are member of \n'
+                                      + 'what you can do is to keep track of chats '
+                                      + 'bot is invited to or is removed from in'
+                                      + 'some database with events')
+
     async def get_chats_from_group(self, chat_group_id: int):
         try:
             return [
@@ -124,7 +131,11 @@ class TelegramBot(Bot):
 
     async def get_user_by_name(self, username: str, chat_group_id: int):
         raise ActionNotSupportedError('getting users by their usernames is not '
-                                      + 'possible on telegram')
+                                      + 'possible on telegram. to be more precise, '
+                                      + 'it is impossible to get all users from '
+                                      + 'chat group \n'
+                                      + 'what you can do is to keep track of new/left'
+                                      + 'members with events in some database')
 
     def __convert_stream_to_telegram_media(self, stream: BufferedReader):
         file = InputFile(stream)
