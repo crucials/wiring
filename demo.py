@@ -9,6 +9,7 @@ from wiring import (Bot, MultiPlatformMessage, MultiPlatformBot, MultiPlatformUs
 from wiring.errors.action_not_supported_error import ActionNotSupportedError
 from wiring.platforms.discord import DiscordBot
 from wiring.platforms.telegram import TelegramBot
+from wiring.platforms.twitch import TwitchBot
 
 
 load_dotenv()
@@ -79,15 +80,17 @@ async def start_bots():
     bot = MultiPlatformBot()
 
     bot.platform_bots = [
-        DiscordBot(os.environ['DISCORD_BOT_TOKEN']),
-        TelegramBot(os.environ['TELEGRAM_BOT_TOKEN'])
+        # DiscordBot(os.environ['DISCORD_BOT_TOKEN']),
+        # TelegramBot(os.environ['TELEGRAM_BOT_TOKEN']),
+        TwitchBot(os.environ['TWITCH_ACCESS_TOKEN'],
+                  streamer_usernames_to_connect=[os.environ['TWITCH_TESTING_CHANNEL']])
     ]
 
     async with bot:
         await bot.setup_commands([
             Command(['start', 'help', 'help1'], send_commands_list),
             Command('ban-user', ban)
-        ])
+        ], '?')
 
         bot.add_event_handler('join', send_greetings)
         bot.add_event_handler('leave', send_goodbye)

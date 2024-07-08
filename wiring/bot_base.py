@@ -29,7 +29,7 @@ class EventHandler:
 
 class Bot(ABC):
     def __init__(self,
-                 platform: Optional[str] = None):
+                 platform: Optional[Platform] = None):
         self.platform = platform
         self.commands_prefix = '/'
         self.commands = []

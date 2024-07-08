@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Any, Literal, Optional, TypedDict
 
 
-Platform = Literal['discord', 'telegram']
+Platform = Literal['discord', 'telegram', 'twitch']
 
 
 MultiPlatformValue = dict[Platform, Any]
