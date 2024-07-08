@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 import logging
 from typing import Any, Callable, Optional
 
@@ -123,14 +124,20 @@ class DiscordBot(Bot):
         except discord.errors.InvalidData:
             raise BotApiError('discord', 'received invalid data from api')
 
-    async def ban(self, chat_group_id: int, user_id: int, reason=None, until_date=None):
+    async def ban(self,
+                  chat_group_id: int,
+                  user_id: int,
+                  reason=None,
+                  seconds_duration=None):
         try:
-            if until_date is not None:
-                self.logger.warning('ignoring `until_date` param for `Bot.ban` method, '
-                                    + 'because discord doesnt have temp bans')
-
             guild = await self.client.fetch_guild(chat_group_id)
-            await (await guild.fetch_member(user_id)).ban(reason=reason)
+            member_to_ban = await guild.fetch_member(user_id)
+
+            if seconds_duration is not None:
+                await member_to_ban.timeout(datetime.timedelta(seconds=seconds_duration),
+                                            reason=reason)
+            else:
+                await member_to_ban.ban(reason=reason)
         except discord.NotFound as discord_not_found_error:
             raise NotFoundError('discord', discord_not_found_error.text)
         except discord.HTTPException as discord_http_error:
@@ -144,8 +151,7 @@ class DiscordBot(Bot):
                                              name=username)
 
             if member is None:
-                raise NotFoundError('discord', f'user with name \'{username}\' cant be '
-                                    + 'found in specified discord chat group')
+                return None
 
             return discord_entities_converter.convert_to_multi_platform_user(member)
         except discord.NotFound as discord_not_found_error:

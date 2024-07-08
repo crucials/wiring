@@ -56,7 +56,7 @@ async def ban(bot: Bot, message: MultiPlatformMessage, args: list[str]):
                                           message.chat_group.id)
 
         if user is not None:
-            await bot.ban(message.chat_group.id, user.id, None)
+            await bot.ban(message.chat_group.id, user.id)
             await bot.send_message(message.chat.id, 'banned',
                                    reply_message_id=message.id)
         else:

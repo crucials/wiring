@@ -95,7 +95,7 @@ class MultiPlatformBot(Bot):
                   chat_group_id: MultiPlatformValue,
                   user_id: MultiPlatformValue,
                   reason=None,
-                  until_date=None):
+                  seconds_duration=None):
         for bot in self.platform_bots:
             if bot.platform not in chat_group_id or bot.platform not in user_id:
                 continue
@@ -104,7 +104,7 @@ class MultiPlatformBot(Bot):
             platform_user_id = user_id[bot.platform]
 
             await bot.ban(platform_chat_group_id, platform_user_id, reason,
-                          until_date)
+                          seconds_duration)
 
     async def get_user_by_name(self,
                                username: PlatformSpecificValue,

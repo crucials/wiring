@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 from io import BufferedReader
 import logging
 from typing import Optional
@@ -118,11 +119,21 @@ class TelegramBot(Bot):
         except TelegramError as telegram_error:
             raise BotApiError('telegram', telegram_error.message)
 
-    async def ban(self, chat_group_id: int, user_id: int, reason=None, until_date=None):
+    async def ban(self,
+                  chat_group_id: int,
+                  user_id: int,
+                  reason=None,
+                  seconds_duration=None):
         try:
             if reason is not None:
                 self.logger.warning('ignoring `reason` param for `Bot.ban` method, '
                                     + 'as it\'s not supported in telegram')
+                
+            until_date = None
+
+            if seconds_duration is not None:
+                until_date = (datetime.datetime.now()
+                              + datetime.timedelta(seconds=seconds_duration))
 
             await self.client.bot.ban_chat_member(chat_group_id, user_id,
                                                   until_date=until_date)

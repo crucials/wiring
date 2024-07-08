@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 import asyncio
 from dataclasses import dataclass
-from datetime import datetime
 from io import BufferedReader
 from typing import Any, Callable, Coroutine, Literal, Optional, Awaitable
 
@@ -106,16 +105,16 @@ class Bot(ABC):
 
     @abstractmethod
     async def ban(self, chat_group_id, user_id, reason: Optional[str] = None,
-                  until_date: Optional[datetime] = None):
+                  seconds_duration: Optional[int] = None):
         """bans the user from the specified chat group
 
         Args:
             chat_group_id: id of the chat group entity (like a discord server
                 or a telegram chat) where to ban
             user_id: id of the user to be banned
-            reason (str): ban reason, not supported on some platforms like telegram
-            until_date (`datetime.datetime`): date when to remove a ban,
-                not supported on some platforms like discord
+            reason: ban reason, not supported on some platforms like telegram
+            seconds_duration: seconds until user gets unbanned. if set `None`,
+                bans permanently
 
         Raises:
             NotFoundError: if some resource cannot be found, subclass of `BotApiError`
