@@ -90,7 +90,7 @@ async def start_bots():
         await bot.setup_commands([
             Command(['start', 'help', 'help1'], send_commands_list),
             Command('ban-user', ban)
-        ], '?')
+        ], '!')
 
         bot.add_event_handler('join', send_greetings)
         bot.add_event_handler('leave', send_goodbye)

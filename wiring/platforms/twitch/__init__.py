@@ -14,10 +14,12 @@ class CustomTwitchClient(twitchio.ext.commands.Bot):
     def __init__(self,
                  access_token: str,
                  streamer_usernames_to_connect: list[str],
+                 get_commands_prefix: Callable[[], str],
                  do_on_event: Callable):
         self._do_on_event = do_on_event
 
-        super().__init__(access_token, prefix='?',
+        super().__init__(access_token,
+                         prefix=get_commands_prefix,
                          initial_channels=streamer_usernames_to_connect)
 
     async def event_message(self, message: twitchio.Message):
@@ -48,6 +50,7 @@ class TwitchBot(Bot):
 
         self.client = CustomTwitchClient(access_token,
                                          streamer_usernames_to_connect,
+                                         lambda: self.commands_prefix,
                                          self._run_handlers)
 
         self.logger = logging.getLogger('wiring.twitch')
