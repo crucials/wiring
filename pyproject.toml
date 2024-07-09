@@ -26,9 +26,6 @@ classifiers = [
 [project.urls]
 "source code and issues" = "https://github.com/crucials/wiring"
 
-[tool.hatch.metadata.hooks.requirements_txt]
-files = ["requirements.txt"]
-
 [tool.hatch.build]
 packages = ["wiring"]
 
