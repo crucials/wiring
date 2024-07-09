@@ -1,6 +1,7 @@
 ![logo with a label 'one bot codebase - multiple platforms'](https://i.ibb.co/1QGmCQx/343200157-4b987f42-1718-4a83-83b1-dc5556da28af.png)
 
-seamless api for developing bots that run on multiple platforms. **discord** and **telegram** are only supported for now
+seamless api for developing bots that run on multiple platforms.
+**discord**, **telegram** and **twitch** are supported
 
 works with asyncio
 
