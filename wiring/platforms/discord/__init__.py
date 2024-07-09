@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 import logging
 from typing import Any, Callable, Optional
 
@@ -102,6 +103,14 @@ class DiscordBot(Bot):
         except discord.HTTPException as discord_error:
             raise BotApiError('discord', discord_error.text, discord_error.status)
 
+    async def get_chat_groups(self, on_platform=None):
+        guilds = [guild async for guild in self.client.fetch_guilds(limit=None)]
+
+        return [
+            discord_entities_converter.convert_to_multi_platform_chat_group(guild)
+            for guild in guilds
+        ]
+
     async def get_chats_from_group(self, chat_group_id: int):
         try:
             channels = await (await self.client.fetch_guild(chat_group_id)).fetch_channels()
@@ -115,14 +124,20 @@ class DiscordBot(Bot):
         except discord.errors.InvalidData:
             raise BotApiError('discord', 'received invalid data from api')
 
-    async def ban(self, chat_group_id: int, user_id: int, reason=None, until_date=None):
+    async def ban(self,
+                  chat_group_id: int,
+                  user_id: int,
+                  reason=None,
+                  seconds_duration=None):
         try:
-            if until_date is not None:
-                self.logger.warning('ignoring `until_date` param for `Bot.ban` method, '
-                                    + 'because discord doesnt have temp bans')
-
             guild = await self.client.fetch_guild(chat_group_id)
-            await (await guild.fetch_member(user_id)).ban(reason=reason)
+            member_to_ban = await guild.fetch_member(user_id)
+
+            if seconds_duration is not None:
+                await member_to_ban.timeout(datetime.timedelta(seconds=seconds_duration),
+                                            reason=reason)
+            else:
+                await member_to_ban.ban(reason=reason)
         except discord.NotFound as discord_not_found_error:
             raise NotFoundError('discord', discord_not_found_error.text)
         except discord.HTTPException as discord_http_error:
@@ -132,13 +147,29 @@ class DiscordBot(Bot):
     async def get_user_by_name(self, username: str, chat_group_id: int):
         try:
             guild = await self.client.fetch_guild(chat_group_id)
-            member = await discord.utils.get(guild.fetch_members(), name=username)
+            member = await discord.utils.get(guild.fetch_members(limit=None),
+                                             name=username)
 
             if member is None:
-                raise NotFoundError('discord', f'user with name \'{username}\' cant be '
-                                    + 'found in specified discord chat group')
+                return None
 
             return discord_entities_converter.convert_to_multi_platform_user(member)
+        except discord.NotFound as discord_not_found_error:
+            raise NotFoundError('discord', discord_not_found_error.text)
+        except discord.HTTPException as discord_http_error:
+            raise BotApiError('discord', discord_http_error.text,
+                              discord_http_error.status)
+
+    async def delete_messages(self, chat_id: int, *messages_ids: int):
+        try:
+            channel: Any = await self.client.fetch_channel(chat_id)
+
+            if not hasattr(channel, 'fetch_message'):
+                raise NotMessageableChatError('discord', channel.id)
+
+            for message_id in messages_ids:
+                message = await channel.fetch_message(message_id)
+                await message.delete()
         except discord.NotFound as discord_not_found_error:
             raise NotFoundError('discord', discord_not_found_error.text)
         except discord.HTTPException as discord_http_error:

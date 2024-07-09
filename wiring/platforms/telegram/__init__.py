@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 from io import BufferedReader
 import logging
 from typing import Optional
@@ -101,6 +102,13 @@ class TelegramBot(Bot):
         except TelegramError as telegram_error:
             raise BotApiError('telegram', telegram_error.message)
 
+    async def get_chat_groups(self, on_platform=None):
+        raise ActionNotSupportedError('it seems telegram api does not permit to get '
+                                      + 'all chats your bot are member of \n'
+                                      + 'what you can do is to keep track of chats '
+                                      + 'bot is invited to or is removed from in'
+                                      + 'some database with events')
+
     async def get_chats_from_group(self, chat_group_id: int):
         try:
             return [
@@ -111,11 +119,21 @@ class TelegramBot(Bot):
         except TelegramError as telegram_error:
             raise BotApiError('telegram', telegram_error.message)
 
-    async def ban(self, chat_group_id: int, user_id: int, reason=None, until_date=None):
+    async def ban(self,
+                  chat_group_id: int,
+                  user_id: int,
+                  reason=None,
+                  seconds_duration=None):
         try:
             if reason is not None:
                 self.logger.warning('ignoring `reason` param for `Bot.ban` method, '
                                     + 'as it\'s not supported in telegram')
+
+            until_date = None
+
+            if seconds_duration is not None:
+                until_date = (datetime.datetime.now()
+                              + datetime.timedelta(seconds=seconds_duration))
 
             await self.client.bot.ban_chat_member(chat_group_id, user_id,
                                                   until_date=until_date)
@@ -124,7 +142,21 @@ class TelegramBot(Bot):
 
     async def get_user_by_name(self, username: str, chat_group_id: int):
         raise ActionNotSupportedError('getting users by their usernames is not '
-                                      + 'possible on telegram')
+                                      + 'possible on telegram. to be more precise, '
+                                      + 'it is impossible to get all users from '
+                                      + 'chat group \n'
+                                      + 'what you can do is to keep track of new/left'
+                                      + 'members with events in some database')
+
+    async def delete_messages(self, chat_id: int, *messages_ids: int):
+        try:
+            successful = await self.client.bot.delete_messages(chat_id, messages_ids)
+
+            if not successful:
+                raise BotApiError('telegram', 'failed to delete messages, perhaps '
+                                  + 'you dont have the permission to do this')
+        except TelegramError as telegram_error:
+            raise BotApiError('telegram', telegram_error.message)
 
     def __convert_stream_to_telegram_media(self, stream: BufferedReader):
         file = InputFile(stream)

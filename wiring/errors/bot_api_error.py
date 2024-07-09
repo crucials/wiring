@@ -5,7 +5,7 @@ from wiring.multi_platform_resources import Platform
 
 class BotApiError(Exception):
     """
-    common class that represents an http error occurred on some platform
+    common class that represents an error occurred on some platform
     api interaction
 
     Attributes:

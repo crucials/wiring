@@ -1,13 +1,12 @@
 from abc import ABC, abstractmethod
 import asyncio
 from dataclasses import dataclass
-from datetime import datetime
 from io import BufferedReader
 from typing import Any, Callable, Coroutine, Literal, Optional, Awaitable
 
-from wiring.multi_platform_resources import (MultiPlatformMessage,
-                                             MultiPlatformChat,
-                                             MultiPlatformUser)
+from wiring.multi_platform_resources import (MultiPlatformChatGroup, MultiPlatformMessage,
+                                             MultiPlatformChat, MultiPlatformUser,
+                                             Platform)
 
 
 CommandHandler = Callable[[Any, MultiPlatformMessage, list[str]], Coroutine]
@@ -29,7 +28,7 @@ class EventHandler:
 
 class Bot(ABC):
     def __init__(self,
-                 platform: Optional[str] = None):
+                 platform: Optional[Platform] = None):
         self.platform = platform
         self.commands_prefix = '/'
         self.commands = []
@@ -64,6 +63,31 @@ class Bot(ABC):
         """
 
     @abstractmethod
+    async def get_chat_groups(
+        self, on_platform: Optional[Platform] = None
+    ) -> list[MultiPlatformChatGroup]:
+        """fetches chat groups the bot is member of
+
+        Args:
+            on_platform: on what platform bot to use, must be specified only **when
+                calling this method from `MultiPlatformBot` class**
+
+        Returns:
+            list of chat groups. if target platform doesnt support
+            chat groups, they are considered identical to chats,
+            so it returns chats converted chat groups
+
+        Raises:
+            BotApiError: if error occurred on some platform api interactions
+            PlatformBotNotFoundError: if bot for specified platform was
+                not added when using `MultiPlatformBot` subclass
+            ValueError: if `on_platform` param is not specified when using
+                `MultiPlatformBot` class
+            ActionNotSupported: if this action is not implemented or is impossible
+                for some platforms like telegram
+        """
+
+    @abstractmethod
     async def get_chats_from_group(self, chat_group_id) -> list[MultiPlatformChat]:
         """fetches a group of connected chats, for example, a discord server
 
@@ -81,16 +105,16 @@ class Bot(ABC):
 
     @abstractmethod
     async def ban(self, chat_group_id, user_id, reason: Optional[str] = None,
-                  until_date: Optional[datetime] = None):
+                  seconds_duration: Optional[int] = None):
         """bans the user from the specified chat group
 
         Args:
             chat_group_id: id of the chat group entity (like a discord server
                 or a telegram chat) where to ban
             user_id: id of the user to be banned
-            reason (str): ban reason, not supported on some platforms like telegram
-            until_date (`datetime.datetime`): date when to remove a ban,
-                not supported on some platforms like discord
+            reason: ban reason, not supported on some platforms like telegram
+            seconds_duration: seconds until user gets unbanned. if set `None`,
+                bans permanently
 
         Raises:
             NotFoundError: if some resource cannot be found, subclass of `BotApiError`
@@ -114,6 +138,17 @@ class Bot(ABC):
                 if you cant access specified chat group
             ActionNotSupported: if this action is not implemented or is impossible
                 for some platforms like telegram
+        """
+
+    @abstractmethod
+    async def delete_messages(self, chat_id, *messages_ids):
+        """deletes messages by their ids
+
+        Raises:
+            NotFoundError: if specified chat or message not found
+            NotMessageableChatError: if target chat cannot contain messages
+            BotApiError: if some other error occurred on platform api interaction, for
+                example if you dont have the permission to delete specific message
         """
 
     async def setup_commands(self, commands: list[Command], prefix: str = '/'):
