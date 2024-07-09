@@ -27,7 +27,7 @@ class TwitchEntitiesConverter(ToMultiPlatformConverter):
 
     def convert_to_multi_platform_chat(self, chat: twitchio.Channel):
         return MultiPlatformChat('twitch', chat.name, chat.name)
-    
+
     def convert_to_multi_platform_message(self, message: TwitchMessageWithUser):
         return MultiPlatformMessage(
             'twitch',
@@ -37,7 +37,7 @@ class TwitchEntitiesConverter(ToMultiPlatformConverter):
             message.text,
             self.convert_to_multi_platform_user(message.user)
         )
-    
+
     def convert_to_multi_platform_user(self,
                                        user: twitchio.User):
         from_chat_group = None
@@ -46,6 +46,6 @@ class TwitchEntitiesConverter(ToMultiPlatformConverter):
             from_chat_group = self.convert_to_multi_platform_chat_group(user.channel)
 
         return MultiPlatformUser('twitch', user.id, user.name, from_chat_group)
-    
+
 
 twitch_entities_converter = TwitchEntitiesConverter()

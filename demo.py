@@ -80,8 +80,8 @@ async def start_bots():
     bot = MultiPlatformBot()
 
     bot.platform_bots = [
-        # DiscordBot(os.environ['DISCORD_BOT_TOKEN']),
-        # TelegramBot(os.environ['TELEGRAM_BOT_TOKEN']),
+        DiscordBot(os.environ['DISCORD_BOT_TOKEN']),
+        TelegramBot(os.environ['TELEGRAM_BOT_TOKEN']),
         TwitchBot(os.environ['TWITCH_ACCESS_TOKEN'],
                   streamer_usernames_to_connect=[os.environ['TWITCH_TESTING_CHANNEL']])
     ]

@@ -113,7 +113,7 @@ class MultiPlatformBot(Bot):
 
         return await platform_bot.get_user_by_name(username['value'],
                                                    chat_group_id['value'])
-    
+
     async def delete_messages(self,
                               chat_id: MultiPlatformValue,
                               *messages_ids: MultiPlatformValue):

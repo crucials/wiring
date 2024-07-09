@@ -44,12 +44,12 @@ class TwitchBot(Bot):
                  access_token: str,
                  streamer_usernames_to_connect: list[str]):
         """initializes a twitch bot for usage with `MultiPlatformBot` class
-        
+
         Args:
             access_token: twitch bot api access token
             streamer_usernames_to_connect: twitch bots cannot interact with a chat of
                 the specific stream without explicitly connecting to it by the streamer
-                username 
+                username
         """
         super().__init__('twitch')
 
@@ -108,7 +108,7 @@ class TwitchBot(Bot):
                   reason=None,
                   seconds_duration=None):
         streamer = await self._get_channel_or_raise(chat_group_id).user()
-        
+
         if self.client.user_id is None:
             return
 
@@ -134,7 +134,7 @@ class TwitchBot(Bot):
             return None
 
         return twitch_entities_converter.convert_to_multi_platform_user(users[0])
-    
+
     async def delete_messages(self, chat_id: str, *messages_ids: str):
         channel = self._get_channel_or_raise(chat_id)
 
@@ -150,5 +150,5 @@ class TwitchBot(Bot):
         if channel is None:
             raise NotFoundError('twitch', 'twitch channel with username '
                                 + f'\'{username}\' not found')
-        
+
         return channel

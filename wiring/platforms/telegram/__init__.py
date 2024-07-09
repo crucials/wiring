@@ -128,7 +128,7 @@ class TelegramBot(Bot):
             if reason is not None:
                 self.logger.warning('ignoring `reason` param for `Bot.ban` method, '
                                     + 'as it\'s not supported in telegram')
-                
+
             until_date = None
 
             if seconds_duration is not None:
@@ -147,7 +147,7 @@ class TelegramBot(Bot):
                                       + 'chat group \n'
                                       + 'what you can do is to keep track of new/left'
                                       + 'members with events in some database')
-    
+
     async def delete_messages(self, chat_id: int, *messages_ids: int):
         try:
             successful = await self.client.bot.delete_messages(chat_id, messages_ids)
@@ -157,7 +157,6 @@ class TelegramBot(Bot):
                                   + 'you dont have the permission to do this')
         except TelegramError as telegram_error:
             raise BotApiError('telegram', telegram_error.message)
-
 
     def __convert_stream_to_telegram_media(self, stream: BufferedReader):
         file = InputFile(stream)

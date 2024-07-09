@@ -4,7 +4,6 @@ import logging
 from typing import Any, Callable, Optional
 
 import discord
-from httpx import delete
 
 from wiring.bot_base import Bot
 from wiring.errors.bot_api_error import BotApiError
