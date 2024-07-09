@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "wiring"
 description = "package for building bots that run on multiple platforms, like discord and telegram"
 requires-python = ">=3.8"
-version = "0.0.5"
+version = "0.1.0"
 dynamic = ["dependencies"]
 readme = { file = "./README.md", content-type = "text/markdown" }
 license = { file = "LICENSE" }
