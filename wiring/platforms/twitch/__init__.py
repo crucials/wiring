@@ -134,6 +134,15 @@ class TwitchBot(Bot):
             return None
 
         return twitch_entities_converter.convert_to_multi_platform_user(users[0])
+    
+    async def delete_messages(self, chat_id: str, *messages_ids: str):
+        channel = self._get_channel_or_raise(chat_id)
+
+        try:
+            for message_id in messages_ids:
+                await channel.send(f'/delete {message_id}')
+        except twitchio.TwitchIOException as twitch_error:
+            raise BotApiError('twitch', str(twitch_error))
 
     def _get_channel_or_raise(self, username: str):
         channel = find_item(self.client.connected_channels,

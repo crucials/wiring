@@ -4,6 +4,7 @@ import logging
 from typing import Any, Callable, Optional
 
 import discord
+from httpx import delete
 
 from wiring.bot_base import Bot
 from wiring.errors.bot_api_error import BotApiError
@@ -154,6 +155,22 @@ class DiscordBot(Bot):
                 return None
 
             return discord_entities_converter.convert_to_multi_platform_user(member)
+        except discord.NotFound as discord_not_found_error:
+            raise NotFoundError('discord', discord_not_found_error.text)
+        except discord.HTTPException as discord_http_error:
+            raise BotApiError('discord', discord_http_error.text,
+                              discord_http_error.status)
+
+    async def delete_messages(self, chat_id: int, *messages_ids: int):
+        try:
+            channel: Any = await self.client.fetch_channel(chat_id)
+
+            if not hasattr(channel, 'fetch_message'):
+                raise NotMessageableChatError('discord', channel.id)
+
+            for message_id in messages_ids:
+                message = await channel.fetch_message(message_id)
+                await message.delete()
         except discord.NotFound as discord_not_found_error:
             raise NotFoundError('discord', discord_not_found_error.text)
         except discord.HTTPException as discord_http_error:

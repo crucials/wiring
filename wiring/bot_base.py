@@ -140,6 +140,17 @@ class Bot(ABC):
                 for some platforms like telegram
         """
 
+    @abstractmethod
+    async def delete_messages(self, chat_id, *messages_ids):
+        """deletes messages by their ids
+
+        Raises:
+            NotFoundError: if specified chat or message not found
+            NotMessageableChatError: if target chat cannot contain messages
+            BotApiError: if some other error occurred on platform api interaction, for
+                example if you dont have the permission to delete specific message
+        """
+
     async def setup_commands(self, commands: list[Command], prefix: str = '/'):
         self.commands_prefix = prefix
         self.commands = commands

@@ -147,6 +147,17 @@ class TelegramBot(Bot):
                                       + 'chat group \n'
                                       + 'what you can do is to keep track of new/left'
                                       + 'members with events in some database')
+    
+    async def delete_messages(self, chat_id: int, *messages_ids: int):
+        try:
+            successful = await self.client.bot.delete_messages(chat_id, messages_ids)
+
+            if not successful:
+                raise BotApiError('telegram', 'failed to delete messages, perhaps '
+                                  + 'you dont have the permission to do this')
+        except TelegramError as telegram_error:
+            raise BotApiError('telegram', telegram_error.message)
+
 
     def __convert_stream_to_telegram_media(self, stream: BufferedReader):
         file = InputFile(stream)

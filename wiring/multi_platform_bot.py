@@ -113,6 +113,17 @@ class MultiPlatformBot(Bot):
 
         return await platform_bot.get_user_by_name(username['value'],
                                                    chat_group_id['value'])
+    
+    async def delete_messages(self,
+                              chat_id: MultiPlatformValue,
+                              *messages_ids: MultiPlatformValue):
+        for bot in self.platform_bots:
+            if bot.platform not in chat_id or bot.platform not in messages_ids:
+                continue
+
+            self.logger.info(f'deleting message in chat \'{chat_id}\' '
+                             + 'on \'{bot.platform}\'')
+            await bot.delete_messages(chat_id[bot.platform], *messages_ids[bot.platform])
 
     def add_event_handler(self, event: Event, handler):
         super().add_event_handler(event, handler)
