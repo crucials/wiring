@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "wiring"
 description = "package for building bots that run on multiple platforms, like discord and telegram"
 requires-python = ">=3.8"
-version = "0.0.5"
+version = "0.1.0"
 dynamic = ["dependencies"]
 readme = { file = "./README.md", content-type = "text/markdown" }
 license = { file = "LICENSE" }
@@ -26,12 +26,10 @@ classifiers = [
 [project.urls]
 "source code and issues" = "https://github.com/crucials/wiring"
 
-[tool.hatch.metadata.hooks.requirements_txt]
-files = ["requirements.txt"]
-
 [tool.hatch.build]
 packages = ["wiring"]
 
 [project.optional-dependencies]
 discord = ["discord.py"]
 telegram = ["python-telegram-bot"]
+twitch = ["twitchio"]
