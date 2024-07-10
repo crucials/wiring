@@ -5,6 +5,8 @@ seamless api for developing bots that run on multiple platforms.
 
 works with asyncio
 
+learn more in the sections below or in the [docs](./docs/README.md)
+
 ## install
 
 install the base library:
