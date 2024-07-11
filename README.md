@@ -5,7 +5,7 @@ seamless api for developing bots that run on multiple platforms.
 
 works with asyncio
 
-learn more in the sections below or in the [docs](./docs/README.md)
+learn more in the sections below or **[docs](https://github.com/crucials/wiring/wiki)**
 
 ## install
 
