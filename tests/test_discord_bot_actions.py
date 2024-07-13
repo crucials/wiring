@@ -2,7 +2,7 @@ import logging
 
 import pytest
 
-from tests.unusable_bot_error import UnusableBotError
+from tests.errors.unusable_bot_error import UnusableBotError
 from wiring.errors.not_messageable_chat_error import NotMessageableChatError
 from wiring.multi_platform_bot import MultiPlatformBot
 
