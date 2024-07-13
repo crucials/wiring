@@ -13,7 +13,7 @@ async def test_message_sending(multi_platform_bot: MultiPlatformBot):
                         + 'telegram api. so you must specify some testing chat id '
                         + 'in `.env` file like that: '
                         + 'TELEGRAM_TESTING_CHAT_ID=<id here>')
-    
+
     await multi_platform_bot.send_message({
         'telegram': int(testing_chat_id)
     }, 'test message')

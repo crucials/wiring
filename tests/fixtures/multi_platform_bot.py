@@ -1,7 +1,5 @@
 import asyncio
-import logging
 import os
-from typing import Optional
 
 from dotenv import load_dotenv
 import pytest
@@ -14,13 +12,13 @@ from wiring.platforms.telegram import TelegramBot
 load_dotenv()
 
 
-async def cancel_pending_asyncio_tasks(event_loop):    
+async def cancel_pending_asyncio_tasks(event_loop):
     pending_tasks = [task for task in asyncio.all_tasks(event_loop)
-             if not task.done()]
+                     if not task.done()]
 
     for task in pending_tasks:
         task.cancel()
-                                  
+
     try:
         await asyncio.wait(pending_tasks)
     except asyncio.exceptions.CancelledError:

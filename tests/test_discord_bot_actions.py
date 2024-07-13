@@ -16,10 +16,10 @@ async def test_message_sending(multi_platform_bot: MultiPlatformBot):
 
     if len(guilds) == 0:
         raise UnusableBotError('current discord bot must be at least in one guild to '
-                            + 'run this test')
+                               + 'run this test')
 
     channels = await multi_platform_bot.get_chats_from_group({'platform': 'discord',
-                                                            'value': guilds[0].id})
+                                                              'value': guilds[0].id})
     assert len(channels) > 0
 
     guild_has_messageable_channels = False
@@ -37,4 +37,4 @@ async def test_message_sending(multi_platform_bot: MultiPlatformBot):
 
     if not guild_has_messageable_channels:
         raise UnusableBotError('current discord bot first guild must have a '
-                            + 'messageable channel')
+                               + 'messageable channel')
