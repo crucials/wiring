@@ -81,6 +81,8 @@ class TelegramBot(Bot):
             await self.client.stop()
 
     async def stop(self):
+        if self.client.updater:
+            await self.client.updater.stop()
         await self.client.stop()
         await self.client.shutdown()
 
@@ -106,7 +108,7 @@ class TelegramBot(Bot):
         raise ActionNotSupportedError('it seems telegram api does not permit to get '
                                       + 'all chats your bot are member of \n'
                                       + 'what you can do is to keep track of chats '
-                                      + 'bot is invited to or is removed from in'
+                                      + 'bot is invited to or is removed from in '
                                       + 'some database with events')
 
     async def get_chats_from_group(self, chat_group_id: int):
