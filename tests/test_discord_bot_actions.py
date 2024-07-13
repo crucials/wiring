@@ -16,9 +16,8 @@ async def test_message_sending(multi_platform_bot: MultiPlatformBot):
                     if bot.platform == 'discord']
 
     if len(discord_bots) == 0:
-        logger.warning('skipping discord bot actions testing because it\'s not added '
-                       + 'via DISCORD_BOT_TOKEN environment variable')
-        return
+        pytest.skip('skipping discord bot actions testing because it\'s not added '
+                    + 'via DISCORD_BOT_TOKEN environment variable')
 
     guilds = await multi_platform_bot.get_chat_groups('discord')
 
