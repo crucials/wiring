@@ -1,3 +1,4 @@
+import logging
 import os
 import pytest
 
@@ -5,8 +6,19 @@ from tests.errors.missing_environment_variables_error import MissingEnvironmentV
 from wiring.multi_platform_bot import MultiPlatformBot
 
 
+logger = logging.getLogger()
+
+
 @pytest.mark.asyncio(scope='session')
 async def test_message_sending(multi_platform_bot: MultiPlatformBot):
+    telegram_bots = [bot for bot in multi_platform_bot.platform_bots
+                     if bot.platform == 'telegram']
+
+    if len(telegram_bots) == 0:
+        logger.warning('skipping telegram bot actions testing because it\'s not added '
+                       + 'via TELEGRAM_BOT_TOKEN environment variable')
+        return
+
     testing_chat_id = os.environ.get('TELEGRAM_TESTING_CHAT_ID')
 
     if testing_chat_id is None:

@@ -12,6 +12,14 @@ logger = logging.getLogger()
 
 @pytest.mark.asyncio(scope='session')
 async def test_message_sending(multi_platform_bot: MultiPlatformBot):
+    discord_bots = [bot for bot in multi_platform_bot.platform_bots
+                    if bot.platform == 'discord']
+
+    if len(discord_bots) == 0:
+        logger.warning('skipping discord bot actions testing because it\'s not added '
+                       + 'via DISCORD_BOT_TOKEN environment variable')
+        return
+
     guilds = await multi_platform_bot.get_chat_groups('discord')
 
     if len(guilds) == 0:
