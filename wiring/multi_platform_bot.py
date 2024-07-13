@@ -61,20 +61,24 @@ class MultiPlatformBot(Bot):
                 await bot.event_listening_coroutine
 
     async def send_message(self, chat_id: MultiPlatformValue, text: str,
-                           reply_message_id: MultiPlatformValue = {},
+                           reply_message_id: Optional[MultiPlatformValue] = None,
                            files: Optional[list] = None):
         for bot in self.platform_bots:
             if bot.platform not in chat_id:
                 continue
 
             platform_chat_id = chat_id.get(bot.platform)
-            platform_reply_message_id = reply_message_id.get(bot.platform)
+            platform_reply_message_id = None
+
+            if reply_message_id is not None:
+                platform_reply_message_id = reply_message_id.get(bot.platform)
 
             if platform_chat_id is not None:
                 self.logger.info(f'sending message to chat \'{platform_chat_id}\' '
                                  + f'on \'{bot.platform}\'')
 
-                await bot.send_message(platform_chat_id, text,
+                await bot.send_message(platform_chat_id,
+                                       text,
                                        platform_reply_message_id,
                                        files)
 
