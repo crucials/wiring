@@ -7,5 +7,6 @@ class NotFoundError(BotApiError):
 
     subclass of `BotApiError`
     """
+
     def __init__(self, platform: Platform, explanation: str):
         super().__init__(platform, explanation, 404)

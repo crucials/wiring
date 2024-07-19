@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Any, Literal, Optional, TypedDict
 
 
-Platform = Literal['discord', 'telegram', 'twitch']
+Platform = Literal["discord", "telegram", "twitch"]
 
 
 MultiPlatformValue = dict[Platform, Any]
@@ -23,6 +23,7 @@ class MultiPlatformChatGroup:
     if platform doesnt support chat groups, they are considered
     identical to chats
     """
+
     platform: Platform
     id: MultiPlatformId
     name: Optional[str]
@@ -33,6 +34,7 @@ class MultiPlatformChat:
     """
     telegram chat, discord channel or other platform chat where message was sent
     """
+
     platform: Platform
     id: MultiPlatformId
     name: Optional[str]
@@ -47,7 +49,7 @@ class MultiPlatformUser:
 
 
 @dataclass
-class MultiPlatformMessage():
+class MultiPlatformMessage:
     platform: Platform
     id: MultiPlatformId
     chat_group: Optional[MultiPlatformChatGroup]

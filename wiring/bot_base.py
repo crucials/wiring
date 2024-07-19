@@ -4,14 +4,18 @@ from dataclasses import dataclass
 from io import BufferedReader
 from typing import Any, Callable, Coroutine, Literal, Optional, Awaitable
 
-from wiring.multi_platform_resources import (MultiPlatformChatGroup, MultiPlatformMessage,
-                                             MultiPlatformChat, MultiPlatformUser,
-                                             Platform)
+from wiring.multi_platform_resources import (
+    MultiPlatformChatGroup,
+    MultiPlatformMessage,
+    MultiPlatformChat,
+    MultiPlatformUser,
+    Platform,
+)
 
 
 CommandHandler = Callable[[Any, MultiPlatformMessage, list[str]], Coroutine]
 
-Event = Literal['message', 'join', 'leave']
+Event = Literal["message", "join", "leave"]
 
 
 @dataclass
@@ -27,10 +31,9 @@ class EventHandler:
 
 
 class Bot(ABC):
-    def __init__(self,
-                 platform: Optional[Platform] = None):
+    def __init__(self, platform: Optional[Platform] = None):
         self.platform = platform
-        self.commands_prefix = '/'
+        self.commands_prefix = "/"
         self.commands = []
 
         self.event_listening_coroutine: Optional[Awaitable] = None
@@ -46,10 +49,13 @@ class Bot(ABC):
         pass
 
     @abstractmethod
-    async def send_message(self, chat_id,
-                           text: str,
-                           reply_message_id: Any = None,
-                           files: Optional[list[BufferedReader]] = None):
+    async def send_message(
+        self,
+        chat_id,
+        text: str,
+        reply_message_id: Any = None,
+        files: Optional[list[BufferedReader]] = None,
+    ):
         """sends message in the chat
 
         Args:
@@ -104,8 +110,13 @@ class Bot(ABC):
         """
 
     @abstractmethod
-    async def ban(self, chat_group_id, user_id, reason: Optional[str] = None,
-                  seconds_duration: Optional[int] = None):
+    async def ban(
+        self,
+        chat_group_id,
+        user_id,
+        reason: Optional[str] = None,
+        seconds_duration: Optional[int] = None,
+    ):
         """bans the user from the specified chat group
 
         Args:
@@ -123,9 +134,9 @@ class Bot(ABC):
         """
 
     @abstractmethod
-    async def get_user_by_name(self,
-                               username,
-                               chat_group_id) -> Optional[MultiPlatformUser]:
+    async def get_user_by_name(
+        self, username, chat_group_id
+    ) -> Optional[MultiPlatformUser]:
         """get user that takes part in specified chat group by username
 
         Args:
@@ -151,7 +162,7 @@ class Bot(ABC):
                 example if you dont have the permission to delete specific message
         """
 
-    async def setup_commands(self, commands: list[Command], prefix: str = '/'):
+    async def setup_commands(self, commands: list[Command], prefix: str = "/"):
         self.commands_prefix = prefix
         self.commands = commands
 
@@ -184,21 +195,30 @@ class Bot(ABC):
             cleaned_text = text.removeprefix(self.commands_prefix).strip().casefold()
 
             if isinstance(command.name, list):
-                return len([name for name in command.name
-                            if cleaned_text == name.casefold()]) > 0
+                return (
+                    len(
+                        [
+                            name
+                            for name in command.name
+                            if cleaned_text == name.casefold()
+                        ]
+                    )
+                    > 0
+                )
 
             return command.name.casefold() == cleaned_text
 
         if not message.text or not message.text.startswith(self.commands_prefix):
             return
 
-        message_parts = message.text.split(' ')
+        message_parts = message.text.split(" ")
 
         if len(message_parts) == 0:
             return
 
         matched_commands = [
-            some_command for some_command in self.commands
+            some_command
+            for some_command in self.commands
             if has_command(message_parts[0], some_command)
         ]
 
