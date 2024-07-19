@@ -3,8 +3,28 @@ name = "wiring"
 version = "0.1.1"
 authors = []
 description = "package for building bots that run on multiple platforms, like discord and telegram"
-license = "LICENSE"
+license = "MIT"
 readme = "README.md"
+repository = "https://github.com/crucials/wiring"
+documentation = "https://github.com/crucials/wiring/wiki"
+keywords = ["wiring", "discord.py", "bot", "python-telegram-bot", "twitchio"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Topic :: Internet",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Utilities",
+    "Typing :: Typed",
+]
+packages = [
+    { include = "wiring" },
+]
+
+[tool.poetry.urls]
+"report an issues" = "https://github.com/crucials/wiring/issues"
 
 [tool.poetry.dependencies]
 python = ">=3.8"
