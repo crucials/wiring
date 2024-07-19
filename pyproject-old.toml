@@ -1,0 +1,36 @@
+[build-system]
+requires = ["hatchling", "hatch-requirements-txt"]
+build-backend = "hatchling.build"
+
+[project]
+name = "wiring"
+description = "package for building bots that run on multiple platforms, like discord and telegram"
+requires-python = ">=3.8"
+version = "0.1.1"
+dynamic = ["dependencies"]
+readme = { file = "./README.md", content-type = "text/markdown" }
+license = { file = "LICENSE" }
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Topic :: Internet",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Utilities",
+    "Typing :: Typed",
+]
+
+[project.urls]
+"source code and issues" = "https://github.com/crucials/wiring"
+
+[tool.hatch.build]
+packages = ["wiring"]
+
+[project.optional-dependencies]
+discord = ["discord.py"]
+telegram = ["python-telegram-bot"]
+twitch = ["twitchio"]
+development = ["pytest", "pytest-asyncio", "pylint", "flake8"]
