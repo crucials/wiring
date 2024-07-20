@@ -28,6 +28,9 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.8"
+discord-py = {version = "^2.4.0", optional = true}
+python-telegram-bot = {version = "^21.4", optional = true}
+twitchio = {version = "^2.10.0", optional = true}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.2"
