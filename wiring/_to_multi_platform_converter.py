@@ -1,9 +1,11 @@
 from abc import ABC, abstractmethod
 
-from wiring.multi_platform_resources import (MultiPlatformChatGroup,
-                                             MultiPlatformMessage,
-                                             MultiPlatformChat,
-                                             MultiPlatformUser)
+from wiring.multi_platform_resources import (
+    MultiPlatformChatGroup,
+    MultiPlatformMessage,
+    MultiPlatformChat,
+    MultiPlatformUser,
+)
 
 
 class ToMultiPlatformConverter(ABC):
@@ -16,7 +18,9 @@ class ToMultiPlatformConverter(ABC):
         pass
 
     @abstractmethod
-    def convert_to_multi_platform_chat_group(self, chat_group) -> MultiPlatformChatGroup:
+    def convert_to_multi_platform_chat_group(
+        self, chat_group
+    ) -> MultiPlatformChatGroup:
         pass
 
     @abstractmethod

@@ -1,18 +1,15 @@
-[build-system]
-requires = ["hatchling", "hatch-requirements-txt"]
-build-backend = "hatchling.build"
-
-[project]
+[tool.poetry]
 name = "wiring"
-description = "package for building bots that run on multiple platforms, like discord and telegram"
-requires-python = ">=3.8"
 version = "0.1.1"
-dynamic = ["dependencies"]
-readme = { file = "./README.md", content-type = "text/markdown" }
-license = { file = "LICENSE" }
+authors = []
+description = "package for building bots that run on multiple platforms, like discord and telegram"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/crucials/wiring"
+documentation = "https://github.com/crucials/wiring/wiki"
+keywords = ["wiring", "discord.py", "bot", "python-telegram-bot", "twitchio"]
 classifiers = [
     "Development Status :: 4 - Beta",
-    "License :: OSI Approved :: MIT License",
     "Intended Audience :: Developers",
     "Natural Language :: English",
     "Operating System :: OS Independent",
@@ -22,15 +19,31 @@ classifiers = [
     "Topic :: Utilities",
     "Typing :: Typed",
 ]
+packages = [
+    { include = "wiring" },
+]
 
-[project.urls]
-"source code and issues" = "https://github.com/crucials/wiring"
+[tool.poetry.urls]
+"report an issues" = "https://github.com/crucials/wiring/issues"
 
-[tool.hatch.build]
-packages = ["wiring"]
+[tool.poetry.dependencies]
+python = ">=3.8"
+discord-py = {version = "^2.4.0", optional = true}
+python-telegram-bot = {version = "^21.4", optional = true}
+twitchio = {version = "^2.10.0", optional = true}
 
-[project.optional-dependencies]
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.2"
+pytest-asyncio = "^0.23.8"
+pylint = "^3.2.5"
+black = "^24.4.2"
+python-dotenv = "^1.0.1"
+
+[tool.poetry.extras]
 discord = ["discord.py"]
 telegram = ["python-telegram-bot"]
 twitch = ["twitchio"]
-development = ["pytest", "pytest-asyncio", "pylint", "flake8"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

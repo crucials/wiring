@@ -1,7 +1,7 @@
 from typing import Callable, TypeVar
 
 
-ItemT = TypeVar('ItemT')
+ItemT = TypeVar("ItemT")
 
 
 def find_item(items: list[ItemT], does_item_match: Callable[[ItemT], bool]):
