@@ -72,8 +72,28 @@ class TwitchBot(Bot):
         if event == "message" and event_data is not None:
             self._check_message_for_command(event_data)
 
+    async def _wait_until_bot_stopped(self, warning_sent=False):
+        try:
+            if self.client._closing is None:
+                if not warning_sent:
+                    self.logger.warn(
+                        "failed to create bot stop event handler, "
+                        + "your app can possibly hang even after all bots have "
+                        + "been stopped"
+                    )
+
+                await self.client.wait_for("close")
+                return
+
+            await self.client._closing.wait()
+        except asyncio.TimeoutError:
+            await self._wait_until_bot_stopped(True)
+
     async def start(self):
-        self.event_listening_coroutine = asyncio.create_task(self.client.start())
+        await self.client.connect()
+        await self.client.wait_for_ready()
+
+        self.event_listening_coroutine = self._wait_until_bot_stopped()
 
     async def stop(self):
         await self.client.close()
