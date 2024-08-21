@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "wiring"
-version = "0.1.1"
+version = "0.1.2"
 authors = []
 description = "package for building bots that run on multiple platforms, like discord and telegram"
 license = "MIT"
