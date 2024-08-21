@@ -17,6 +17,6 @@ async def test_message_sending(multi_platform_bot: MultiPlatformBot):
 
     channels = await multi_platform_bot.get_chat_groups("twitch")
 
-    assert len(channels) > 0
+    assert len(channels) > 0, "bot is not connected to any twitch chat"
 
     await multi_platform_bot.send_message({"twitch": channels[0].id}, "test message")
